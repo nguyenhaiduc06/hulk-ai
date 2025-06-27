@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 
 import { Container } from '~/components/Container';
@@ -10,6 +11,7 @@ type TaskItem = {
   category: string;
   description: string;
   emoji: string;
+  prompt: string;
 };
 
 type Category = {
@@ -35,6 +37,7 @@ const taskItems: TaskItem[] = [
     category: 'work',
     description: 'AI-powered text summarization for documents and articles',
     emoji: '📝',
+    prompt: 'Please summarize the following text and extract the key points:',
   },
   {
     id: '2',
@@ -43,6 +46,7 @@ const taskItems: TaskItem[] = [
     category: 'work',
     description: 'Convert descriptions into working code snippets',
     emoji: '💻',
+    prompt: 'Please generate code for the following requirement:',
   },
   {
     id: '3',
@@ -51,6 +55,7 @@ const taskItems: TaskItem[] = [
     category: 'learning',
     description: 'AI vision to understand and describe visual content',
     emoji: '🖼️',
+    prompt: 'Please analyze and describe this image in detail:',
   },
   {
     id: '4',
@@ -59,6 +64,7 @@ const taskItems: TaskItem[] = [
     category: 'personal',
     description: 'Real-time translation with context awareness',
     emoji: '🌐',
+    prompt: 'Please translate the following text to English:',
   },
   {
     id: '5',
@@ -67,6 +73,7 @@ const taskItems: TaskItem[] = [
     category: 'finance',
     description: 'AI-powered data insights and trend analysis',
     emoji: '📊',
+    prompt: 'Please analyze this data and provide insights:',
   },
   {
     id: '6',
@@ -75,6 +82,7 @@ const taskItems: TaskItem[] = [
     category: 'work',
     description: 'AI writing assistant for various content types',
     emoji: '✍️',
+    prompt: 'Please write content about the following topic:',
   },
   {
     id: '7',
@@ -83,6 +91,7 @@ const taskItems: TaskItem[] = [
     category: 'health',
     description: 'Voice interaction and transcription services',
     emoji: '🎤',
+    prompt: 'Please help me with voice-related tasks. I can provide audio or text:',
   },
   {
     id: '8',
@@ -91,6 +100,7 @@ const taskItems: TaskItem[] = [
     category: 'learning',
     description: 'AI-powered code review and optimization',
     emoji: '🔍',
+    prompt: 'Please review this code and suggest improvements:',
   },
   {
     id: '9',
@@ -99,6 +109,7 @@ const taskItems: TaskItem[] = [
     category: 'personal',
     description: 'Design and deploy intelligent chatbots',
     emoji: '🤖',
+    prompt: 'Please help me design a chatbot for the following use case:',
   },
   {
     id: '10',
@@ -107,6 +118,7 @@ const taskItems: TaskItem[] = [
     category: 'finance',
     description: 'AI-powered prediction and forecasting models',
     emoji: '🔮',
+    prompt: 'Please analyze trends and make predictions based on this data:',
   },
   {
     id: '11',
@@ -115,6 +127,7 @@ const taskItems: TaskItem[] = [
     category: 'work',
     description: 'AI document parsing and information extraction',
     emoji: '📄',
+    prompt: 'Please extract and organize information from this document:',
   },
   {
     id: '12',
@@ -123,16 +136,28 @@ const taskItems: TaskItem[] = [
     category: 'health',
     description: 'AI-powered recommendation system',
     emoji: '🎯',
+    prompt: 'Please provide personalized recommendations based on my preferences:',
   },
 ];
 
 export default function AITask() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const router = useRouter();
 
   const filteredTasks =
     selectedCategory === 'all'
       ? taskItems
       : taskItems.filter((task) => task.category === selectedCategory);
+
+  const handleTaskPress = (task: TaskItem) => {
+    router.push({
+      pathname: '/chat',
+      params: {
+        initialPrompt: task.prompt,
+        taskTitle: task.title,
+      },
+    });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -155,11 +180,13 @@ export default function AITask() {
       <View
         className={`mb-4 ${isLastItem && isOddNumberOfItems ? 'w-1/2' : 'flex-1'}`}
         style={{ marginHorizontal: 4 }}>
-        <TouchableOpacity className="aspect-square rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+        <TouchableOpacity
+          className="aspect-square rounded-xl border border-gray-300 bg-white p-4"
+          onPress={() => handleTaskPress(item)}>
           <View className="flex-1">
-            <Text className="mb-2 text-4xl">{item.emoji}</Text>
-            <Text className="mb-1 text-sm font-semibold text-gray-900">{item.title}</Text>
-            <Text className="text-xs text-gray-500">{item.subtitle}</Text>
+            <Text className="mb-4 text-5xl">{item.emoji}</Text>
+            <Text className="mb-1 font-bold text-gray-900">{item.title}</Text>
+            <Text className="text-sm text-gray-500">{item.subtitle}</Text>
           </View>
         </TouchableOpacity>
       </View>

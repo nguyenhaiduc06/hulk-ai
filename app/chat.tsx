@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useState, useRef, useEffect } from 'react';
 import {
   View,
@@ -8,7 +8,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
   ActivityIndicator,
 } from 'react-native';
 
@@ -23,17 +22,29 @@ type Message = {
 };
 
 export default function Chat() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "Hello! I'm your AI assistant. How can I help you today?",
-      isUser: false,
-      timestamp: new Date(),
-    },
-  ]);
+  const { initialPrompt, taskTitle } = useLocalSearchParams();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  // Initialize with welcome message and optional initial prompt
+  useEffect(() => {
+    const welcomeMessage: Message = {
+      id: '1',
+      text: taskTitle
+        ? `Hello! I'm your AI assistant for ${taskTitle}. How can I help you today?`
+        : "Hello! I'm your AI assistant. How can I help you today?",
+      isUser: false,
+      timestamp: new Date(),
+    };
+    setMessages([welcomeMessage]);
+
+    // If there's an initial prompt, prefill the input field
+    if (initialPrompt) {
+      setInputText(initialPrompt as string);
+    }
+  }, [initialPrompt, taskTitle]);
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -95,12 +106,16 @@ export default function Chat() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Chat' }} />
+      <Stack.Screen
+        options={{
+          title: taskTitle ? `${taskTitle} Assistant` : 'Chat',
+          headerBackTitle: 'Back',
+        }}
+      />
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
-        <Container>
+        // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
+        <View className="p-safe flex-1">
           <View className="flex-1">
             {/* Messages */}
             <ScrollView
@@ -174,7 +189,7 @@ export default function Chat() {
               </TouchableOpacity>
             </View>
           </View>
-        </Container>
+        </View>
       </KeyboardAvoidingView>
     </>
   );
