@@ -177,12 +177,13 @@ export default function Chat() {
       />
 
       <KeyboardAvoidingView style={{ flex: 1 }}>
-        <View className="flex-1">
+        <View className="pb-safe flex-1">
           <View className="flex-1">
             {/* Messages */}
             <ScrollView
               ref={scrollViewRef}
-              className="flex-1 px-4"
+              className="flex-1"
+              contentContainerStyle={{ padding: 16 }}
               showsVerticalScrollIndicator={false}
               onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
               onLayout={() => scrollViewRef.current?.scrollToEnd({ animated: true })}>
@@ -278,7 +279,7 @@ export default function Chat() {
                 {isLoading ? (
                   <ActivityIndicator size="small" color="white" />
                 ) : (
-                  <Ionicons name="send" size={20} color="white" />
+                  <Ionicons name="arrow-forward" size={20} color="white" />
                 )}
               </TouchableOpacity>
             </View>

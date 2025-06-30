@@ -26,7 +26,7 @@ export function SuggestionCard({ suggestion }: SuggestionCardProps) {
         <Text className="mr-4 text-3xl">{suggestion.emoji}</Text>
         <View className="flex-1">
           <Text
-            className="font-clash-semibold text-text-primary text-lg leading-tight"
+            className="font-clash-medium text-text-primary text-lg leading-tight"
             numberOfLines={2}>
             {suggestion.title}
           </Text>

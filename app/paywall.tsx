@@ -23,7 +23,7 @@ export default function Paywall() {
         }}
       />
 
-      <SafeAreaView className="from-primary-light flex-1 bg-gradient-to-b to-white">
+      <SafeAreaView className="flex-1 bg-gray-100">
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 py-4">
           <TouchableOpacity
@@ -41,7 +41,7 @@ export default function Paywall() {
             <View className="bg-primary mb-6 h-24 w-24 items-center justify-center rounded-3xl">
               <Ionicons name="diamond" size={48} color="white" />
             </View>
-            <Text className="font-clash-bold text-text-primary mb-4 text-center text-3xl">
+            <Text className="font-clash-bold text-text-primary text-center text-3xl">
               Unlock Premium Features
             </Text>
             <Text className="font-inter text-text-secondary text-center text-lg">
@@ -49,104 +49,12 @@ export default function Paywall() {
             </Text>
           </View>
 
-          {/* Features */}
-          <View className="mb-12">
-            <Text className="font-clash-semibold text-text-primary mb-6 text-xl">
-              What's Included
-            </Text>
-            <View className="space-y-4">
-              {[
-                { icon: 'infinite', title: 'Unlimited Messages', description: 'No daily limits' },
-                { icon: 'flash', title: 'Priority Processing', description: 'Faster responses' },
-                { icon: 'star', title: 'Advanced AI Models', description: 'GPT-4 and beyond' },
-                {
-                  icon: 'document-text',
-                  title: 'File Processing',
-                  description: 'Upload and analyze files',
-                },
-                {
-                  icon: 'color-palette',
-                  title: 'Custom Themes',
-                  description: 'Personalize your experience',
-                },
-                {
-                  icon: 'shield-checkmark',
-                  title: 'Priority Support',
-                  description: '24/7 customer service',
-                },
-              ].map((feature, index) => (
-                <View
-                  key={index}
-                  className="flex-row items-center rounded-3xl bg-white p-6 shadow-lg">
-                  <View className="bg-primary-light mr-4 h-12 w-12 items-center justify-center rounded-2xl">
-                    <Ionicons name={feature.icon as any} size={24} color="#8ee04e" />
-                  </View>
-                  <View className="flex-1">
-                    <Text className="font-clash-medium text-text-primary mb-1 text-base">
-                      {feature.title}
-                    </Text>
-                    <Text className="font-inter text-text-secondary text-sm">
-                      {feature.description}
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          {/* Pricing */}
-          <View className="mb-12">
-            <Text className="font-clash-semibold text-text-primary mb-6 text-xl">
-              Choose Your Plan
-            </Text>
-
-            {/* Monthly Plan */}
-            <TouchableOpacity
-              onPress={() => handleSubscribe('monthly')}
-              className="border-primary mb-4 rounded-3xl border-2 bg-white p-6 shadow-lg">
-              <View className="mb-4 flex-row items-center justify-between">
-                <View>
-                  <Text className="font-clash-semibold text-text-primary text-lg">Monthly</Text>
-                  <Text className="font-inter text-text-secondary text-sm">
-                    Perfect for trying out
-                  </Text>
-                </View>
-                <View className="items-end">
-                  <Text className="font-clash-bold text-primary text-2xl">$9.99</Text>
-                  <Text className="font-inter text-text-secondary text-sm">per month</Text>
-                </View>
-              </View>
-              <View className="bg-primary-light rounded-2xl p-3">
-                <Text className="font-clash-medium text-primary text-center">Start Free Trial</Text>
-              </View>
-            </TouchableOpacity>
-
-            {/* Yearly Plan */}
-            <TouchableOpacity
-              onPress={() => handleSubscribe('yearly')}
-              className="from-primary to-primary-light rounded-3xl bg-gradient-to-r p-6 shadow-lg">
-              <View className="mb-4 flex-row items-center justify-between">
-                <View>
-                  <Text className="font-clash-semibold text-lg text-white">Yearly</Text>
-                  <Text className="font-inter text-sm text-white/80">Best value - Save 17%</Text>
-                </View>
-                <View className="items-end">
-                  <Text className="font-clash-bold text-2xl text-white">$99.99</Text>
-                  <Text className="font-inter text-sm text-white/80">per year</Text>
-                </View>
-              </View>
-              <View className="rounded-2xl bg-white/20 p-3">
-                <Text className="font-clash-medium text-center text-white">Most Popular</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-
           {/* Testimonials */}
           <View className="mb-12">
-            <Text className="font-clash-semibold text-text-primary mb-6 text-xl">
+            <Text className="font-clash-semibold text-text-primary mb-2 text-xl">
               What Users Say
             </Text>
-            <View className="space-y-4">
+            <View className="gap-2">
               {[
                 {
                   name: 'Sarah M.',
@@ -171,6 +79,96 @@ export default function Paywall() {
                 </View>
               ))}
             </View>
+          </View>
+
+          {/* Features */}
+          <View className="mb-12">
+            <Text className="font-clash-semibold text-text-primary mb-2 text-xl">
+              What's Included
+            </Text>
+            <View className="rounded-3xl bg-white p-6 shadow-lg">
+              {[
+                { icon: 'infinite', title: 'Unlimited Messages', description: 'No daily limits' },
+                { icon: 'flash', title: 'Priority Processing', description: 'Faster responses' },
+                { icon: 'star', title: 'Advanced AI Models', description: 'GPT-4 and beyond' },
+                {
+                  icon: 'document-text',
+                  title: 'File Processing',
+                  description: 'Upload and analyze files',
+                },
+                {
+                  icon: 'color-palette',
+                  title: 'Custom Themes',
+                  description: 'Personalize your experience',
+                },
+                {
+                  icon: 'shield-checkmark',
+                  title: 'Priority Support',
+                  description: '24/7 customer service',
+                },
+              ].map((feature, index) => (
+                <View key={index} className={`flex-row items-center ${index !== 0 ? 'mt-4' : ''}`}>
+                  <View className="bg-primary-light mr-4 h-12 w-12 items-center justify-center rounded-2xl">
+                    <Ionicons name={feature.icon as any} size={24} color="#50b800" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="font-clash-medium text-text-primary text-lg">
+                      {feature.title}
+                    </Text>
+                    <Text className="font-inter text-text-tertiary text-sm">
+                      {feature.description}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/* Pricing */}
+          <View className="mb-12">
+            <Text className="font-clash-semibold text-text-primary mb-2 text-xl">
+              Choose Your Plan
+            </Text>
+
+            {/* Monthly Plan */}
+            <TouchableOpacity
+              onPress={() => handleSubscribe('monthly')}
+              className="border-primary mb-4 rounded-3xl border-2 bg-white p-6 shadow-lg">
+              <View className="mb-4 flex-row items-center justify-between">
+                <View>
+                  <Text className="font-clash-semibold text-text-primary text-lg">Monthly</Text>
+                  <Text className="font-inter text-text-secondary text-sm">
+                    Perfect for trying out
+                  </Text>
+                </View>
+                <View className="items-end">
+                  <Text className="font-clash-bold text-primary text-2xl">$9.99</Text>
+                  <Text className="font-inter text-text-secondary text-sm">per month</Text>
+                </View>
+              </View>
+              <View className="bg-primary rounded-2xl p-3">
+                <Text className="font-clash-medium text-center text-white">Start Free Trial</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Yearly Plan */}
+            <TouchableOpacity
+              onPress={() => handleSubscribe('yearly')}
+              className="bg-primary rounded-3xl p-6 shadow-lg">
+              <View className="mb-4 flex-row items-center justify-between">
+                <View>
+                  <Text className="font-clash-semibold text-lg text-white">Yearly</Text>
+                  <Text className="font-inter text-sm text-white/80">Best value - Save 17%</Text>
+                </View>
+                <View className="items-end">
+                  <Text className="font-clash-bold text-2xl text-white">$99.99</Text>
+                  <Text className="font-inter text-sm text-white/80">per year</Text>
+                </View>
+              </View>
+              <View className="rounded-2xl bg-white/20 p-3">
+                <Text className="font-clash-medium text-center text-black/40">Most Popular</Text>
+              </View>
+            </TouchableOpacity>
           </View>
 
           {/* Bottom spacing */}

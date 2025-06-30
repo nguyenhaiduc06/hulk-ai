@@ -194,9 +194,9 @@ export default function AITask() {
       onPress={() => handleTaskPress(item)}
       className="m-2 flex-1 rounded-3xl border-2 border-gray-100 bg-white p-4 shadow-lg">
       <View className="items-start">
-        <Text className="mb-4 text-3xl">{item.emoji}</Text>
+        <Text className="mb-4 text-5xl leading-normal">{item.emoji}</Text>
         <Text
-          className="font-clash-semibold text-text-primary mb-2 text-lg leading-tight"
+          className="font-clash-medium text-text-primary text-lg leading-tight"
           numberOfLines={2}>
           {item.title}
         </Text>

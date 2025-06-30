@@ -27,8 +27,6 @@ export function CustomHeader({
   };
 
   const getMessageIcon = () => {
-    if (messagesLeft === 0) return 'close-circle';
-    if (messagesLeft <= 1) return 'warning';
     return 'chatbubble';
   };
 
@@ -48,7 +46,7 @@ export function CustomHeader({
               <Ionicons name="arrow-back" size={24} color="#374151" />
             </TouchableOpacity>
           )}
-          <Text className="font-clash-semibold text-text-primary flex-1 text-xl" numberOfLines={1}>
+          <Text className="font-clash-semibold text-text-primary flex-1 text-2xl" numberOfLines={1}>
             {title}
           </Text>
         </View>
