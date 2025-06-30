@@ -31,7 +31,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -39,7 +41,15 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.nguyenhaiduc06.hulkai"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7370c0e6-0ddd-406f-9795-a8077b4fc4d1"
       }
-    }
+    },
+    "owner": "nguyenhaiduc06"
   }
 }
