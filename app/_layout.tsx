@@ -3,6 +3,8 @@ import '../global.css';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { loadFonts } from '../utils/fonts';
 
 export default function Layout() {
@@ -24,18 +26,26 @@ export default function Layout() {
 
   if (!fontsLoaded) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <Text className="text-gray-600">Loading...</Text>
-      </View>
+      <GestureHandlerRootView className="flex-1">
+        <BottomSheetModalProvider>
+          <View className="flex-1 items-center justify-center bg-white">
+            <Text className="text-gray-600">Loading...</Text>
+          </View>
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
     );
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="details" options={{ title: 'Details' }} />
-      <Stack.Screen name="chat" options={{ title: 'Chat', headerShown: false }} />
-      <Stack.Screen name="paywall" options={{ title: 'Premium', headerShown: false }} />
-    </Stack>
+    <GestureHandlerRootView className="flex-1">
+      <BottomSheetModalProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="details" options={{ title: 'Details' }} />
+          <Stack.Screen name="chat" options={{ title: 'Chat', headerShown: false }} />
+          <Stack.Screen name="paywall" options={{ title: 'Premium', headerShown: false }} />
+        </Stack>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }
