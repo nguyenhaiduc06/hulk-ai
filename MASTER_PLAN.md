@@ -27,16 +27,20 @@ To provide users with a seamless, AI-powered assistant that can help with work, 
 hulk-ai/
 ├── app/                    # Expo Router pages
 │   ├── (tabs)/            # Tab navigation screens
-│   │   ├── index.tsx      # Home screen
+│   │   ├── index.tsx      # Home screen with 3 sections
 │   │   └── ai-task.tsx    # AI Task browser
 │   ├── chat.tsx           # Chat interface
 │   └── details.tsx        # Details screen
 ├── components/            # Reusable UI components
-│   └── CustomHeader.tsx   # Custom header with message limit indicator
+│   ├── CustomHeader.tsx   # Custom header with message limit indicator
+│   ├── ChatInputButton.tsx # Chat input button component
+│   ├── SuggestionCard.tsx # Suggestion card component
+│   └── RecentChatCard.tsx # Recent chat card component
 ├── utils/                 # Utility functions
 │   ├── openai.ts         # OpenAI integration
 │   ├── supabase.ts       # Supabase client
-│   └── messageLimit.ts   # Daily message limit management
+│   ├── messageLimit.ts   # Daily message limit management
+│   └── mockData.ts       # Mock data for suggestions and recent chats
 ├── store/                # State management
 └── assets/               # App assets
 ```
@@ -110,6 +114,23 @@ hulk-ai/
   - Persistent storage using AsyncStorage
   - Graceful handling when limit is reached
   - User-friendly alerts and disabled states
+
+### 7. Enhanced Home Screen
+
+- **Status**: ✅ Complete
+- **Description**: Redesigned home screen with three main sections
+- **Features**:
+  - **Chat Section**: Text input-like button that navigates to chat screen
+  - **Suggestions Section**: Horizontal scrollable cards with popular prompts
+    - 6 predefined suggestion cards with emojis
+    - Sample user chat titles and AI response descriptions
+    - Tap to navigate to chat with pre-filled prompt
+  - **Recent Chats Section**: Horizontal scrollable cards showing conversation history
+    - Mock data for recent conversations
+    - Shows last user message as title and last AI response as description
+    - Task type badges with color coding
+    - Timestamps for each conversation
+    - Tap to continue conversation with pre-filled prompt
 
 ## 🚧 In Progress Features
 
@@ -368,6 +389,13 @@ hulk-ai/
   - Visual indicators (green/amber/red)
   - Graceful limit handling with user alerts
   - Daily reset functionality
+
+- ✅ **Enhanced Home Screen**: Redesigned home screen with three main sections
+  - Chat input button that looks like a text field
+  - Horizontal scrollable suggestions with 6 predefined cards
+  - Horizontal scrollable recent chats with mock data
+  - Task type badges and timestamps
+  - Seamless navigation to chat with pre-filled prompts
 
 ---
 
