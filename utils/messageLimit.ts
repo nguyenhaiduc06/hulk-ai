@@ -12,6 +12,13 @@ export interface MessageLimitState {
   lastResetDate: string;
 }
 
+// Check if user is premium (this will be called from components)
+export function isPremiumUser(): boolean {
+  // This will be called from components that have access to the subscription store
+  // For now, we'll return false and let components handle the premium check
+  return false;
+}
+
 export async function getMessageLimitState(): Promise<MessageLimitState> {
   try {
     const [messageCount, lastResetDate] = await Promise.all([

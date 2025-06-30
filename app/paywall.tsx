@@ -1,18 +1,42 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { useSubscriptionStore } from '~/store/store';
 
 export default function Paywall() {
   const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const setPremium = useSubscriptionStore((state) => state.setPremium);
 
   const handleBack = () => {
     router.back();
   };
 
-  const handleSubscribe = (plan: 'monthly' | 'yearly') => {
-    // TODO: Implement subscription logic
-    console.log(`Subscribing to ${plan} plan`);
+  const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
+    setIsProcessing(true);
+
+    // Simulate payment processing
+    setTimeout(() => {
+      setIsProcessing(false);
+
+      // Mock successful payment
+      Alert.alert(
+        'Payment Successful! 🎉',
+        `Your ${plan} subscription has been activated. You now have unlimited messages!`,
+        [
+          {
+            text: 'Start Using Premium',
+            onPress: () => {
+              // Update subscription status
+              setPremium(plan);
+              router.back();
+            },
+          },
+        ]
+      );
+    }, 2000); // 2 second delay to simulate processing
   };
 
   return (
@@ -133,7 +157,10 @@ export default function Paywall() {
             {/* Monthly Plan */}
             <TouchableOpacity
               onPress={() => handleSubscribe('monthly')}
-              className="border-primary mb-4 rounded-3xl border-2 bg-white p-6 shadow-lg">
+              disabled={isProcessing}
+              className={`border-primary mb-4 rounded-3xl border-2 bg-white p-6 shadow-lg ${
+                isProcessing ? 'opacity-50' : ''
+              }`}>
               <View className="mb-4 flex-row items-center justify-between">
                 <View>
                   <Text className="font-clash-semibold text-text-primary text-lg">Monthly</Text>
@@ -147,14 +174,19 @@ export default function Paywall() {
                 </View>
               </View>
               <View className="bg-primary rounded-2xl p-3">
-                <Text className="font-clash-medium text-center text-white">Start Free Trial</Text>
+                <Text className="font-clash-medium text-center text-white">
+                  {isProcessing ? 'Processing...' : 'Start Free Trial'}
+                </Text>
               </View>
             </TouchableOpacity>
 
             {/* Yearly Plan */}
             <TouchableOpacity
               onPress={() => handleSubscribe('yearly')}
-              className="bg-primary rounded-3xl p-6 shadow-lg">
+              disabled={isProcessing}
+              className={`bg-primary rounded-3xl p-6 shadow-lg ${
+                isProcessing ? 'opacity-50' : ''
+              }`}>
               <View className="mb-4 flex-row items-center justify-between">
                 <View>
                   <Text className="font-clash-semibold text-lg text-white">Yearly</Text>
@@ -166,7 +198,9 @@ export default function Paywall() {
                 </View>
               </View>
               <View className="rounded-2xl bg-white/20 p-3">
-                <Text className="font-clash-medium text-center text-black/40">Most Popular</Text>
+                <Text className="font-clash-medium text-center text-black/40">
+                  {isProcessing ? 'Processing...' : 'Most Popular'}
+                </Text>
               </View>
             </TouchableOpacity>
           </View>

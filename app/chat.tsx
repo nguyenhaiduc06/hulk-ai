@@ -12,6 +12,12 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  interpolate,
+} from 'react-native-reanimated';
 
 import { Container } from '~/components/Container';
 import { CustomHeader } from '~/components/CustomHeader';
@@ -23,6 +29,7 @@ import {
   DAILY_MESSAGE_LIMIT,
   MessageLimitState,
 } from '~/utils/messageLimit';
+import { useSubscriptionStore } from '~/store/store';
 
 type Message = {
   id: string;
@@ -37,12 +44,15 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [messageLimitState, setMessageLimitState] = useState<MessageLimitState>({
     messagesLeft: DAILY_MESSAGE_LIMIT,
     maxMessages: DAILY_MESSAGE_LIMIT,
     lastResetDate: new Date().toDateString(),
   });
   const scrollViewRef = useRef<ScrollView>(null);
+  const isPremium = useSubscriptionStore((state) => state.isPremium);
+  const expandValue = useSharedValue(0);
 
   // Load message limit state on component mount
   useEffect(() => {
@@ -81,24 +91,28 @@ export default function Chat() {
 
   const sendMessage = async () => {
     if (inputText.trim() && !isLoading) {
-      // Check if user can send a message
-      const canSend = await canSendMessage();
-      if (!canSend) {
-        Alert.alert(
-          'Daily Limit Reached',
-          'You have reached your daily message limit of 5 messages. Please try again tomorrow.',
-          [{ text: 'OK' }]
-        );
-        return;
+      // Check if user can send a message (skip for premium users)
+      if (!isPremium) {
+        const canSend = await canSendMessage();
+        if (!canSend) {
+          Alert.alert(
+            'Daily Limit Reached',
+            'You have reached your daily message limit of 5 messages. Please try again tomorrow.',
+            [{ text: 'OK' }]
+          );
+          return;
+        }
       }
 
       const userMessage = inputText.trim();
       setInputText('');
       setIsLoading(true);
 
-      // Increment message count
-      const newLimitState = await incrementMessageCount();
-      setMessageLimitState(newLimitState);
+      // Increment message count (skip for premium users)
+      if (!isPremium) {
+        const newLimitState = await incrementMessageCount();
+        setMessageLimitState(newLimitState);
+      }
 
       // Add user message
       const newUserMessage: Message = {
@@ -146,7 +160,7 @@ export default function Chat() {
   };
 
   const handleInputSubmit = async () => {
-    if (messageLimitState.messagesLeft <= 0) {
+    if (!isPremium && messageLimitState.messagesLeft <= 0) {
       Alert.alert(
         'Daily Limit Reached',
         'You have reached your daily message limit of 5 messages. Please try again tomorrow.',
@@ -161,14 +175,30 @@ export default function Chat() {
     router.push('/paywall');
   };
 
-  return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: false, // Hide default header to use custom header
-        }}
-      />
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+    expandValue.value = withSpring(isExpanded ? 0 : 1, {
+      damping: 15,
+      stiffness: 150,
+    });
+  };
 
+  const animatedInputStyle = useAnimatedStyle(() => {
+    const height = interpolate(expandValue.value, [0, 1], [56, 250]);
+    return {
+      height,
+    };
+  });
+
+  const animatedButtonStyle = useAnimatedStyle(() => {
+    const rotation = interpolate(expandValue.value, [0, 1], [180, 0]);
+    return {
+      transform: [{ rotate: `${rotation}deg` }],
+    };
+  });
+
+  return (
+    <View className="pb-safe flex-1">
       {/* Custom Header */}
       <CustomHeader
         title={taskTitle ? `${taskTitle} Assistant` : 'Chat'}
@@ -176,8 +206,10 @@ export default function Chat() {
         maxMessages={messageLimitState.maxMessages}
       />
 
-      <KeyboardAvoidingView style={{ flex: 1 }}>
-        <View className="pb-safe flex-1">
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <View className="flex-1">
           <View className="flex-1">
             {/* Messages */}
             <ScrollView
@@ -193,7 +225,7 @@ export default function Chat() {
                   className={`mb-4 ${message.isUser ? 'items-end' : 'items-start'}`}>
                   <View
                     className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                      message.isUser ? 'rounded-br-md bg-indigo-500' : 'rounded-bl-md bg-gray-200'
+                      message.isUser ? 'bg-primary rounded-br-md' : 'rounded-bl-md bg-gray-200'
                     }`}>
                     <Text
                       className={`text-base ${message.isUser ? 'text-white' : 'text-gray-800'}`}>
@@ -201,7 +233,7 @@ export default function Chat() {
                     </Text>
                     <Text
                       className={`mt-1 text-xs ${
-                        message.isUser ? 'text-indigo-100' : 'text-gray-500'
+                        message.isUser ? 'text-white/80' : 'text-gray-500'
                       }`}>
                       {message.timestamp.toLocaleTimeString([], {
                         hour: '2-digit',
@@ -225,7 +257,7 @@ export default function Chat() {
               )}
 
               {/* Daily limit reached message with premium CTA */}
-              {messageLimitState.messagesLeft === 0 && (
+              {!isPremium && messageLimitState.messagesLeft === 0 && (
                 <View className="mb-4 items-center">
                   <View className="border-primary max-w-[80%] rounded-3xl border-2 bg-white p-6 shadow-lg">
                     <View className="mb-4 flex-row items-center">
@@ -251,41 +283,68 @@ export default function Chat() {
             </ScrollView>
 
             {/* Input */}
-            <View className="flex-row items-center border-t-2 border-gray-100 px-6 py-4">
-              <TextInput
-                className="font-inter mr-4 flex-1 rounded-2xl border-2 border-gray-200 px-5 py-4 text-base"
-                placeholder={
-                  messageLimitState.messagesLeft === 0 ? 'Daily limit reached' : 'Type a message...'
-                }
-                value={inputText}
-                onChangeText={setInputText}
-                onSubmitEditing={handleInputSubmit}
-                returnKeyType="send"
-                multiline={false}
-                blurOnSubmit={true}
-                editable={!isLoading && messageLimitState.messagesLeft > 0}
-                style={{
-                  opacity: messageLimitState.messagesLeft === 0 ? 0.5 : 1,
-                }}
-              />
+            <View className="border-t-2 border-gray-100 px-6 py-4">
+              {/* Expand Button */}
               <TouchableOpacity
-                onPress={handleInputSubmit}
-                className={`h-14 w-14 items-center justify-center rounded-2xl ${
-                  isLoading || !inputText.trim() || messageLimitState.messagesLeft === 0
-                    ? 'bg-gray-300'
-                    : 'bg-primary'
-                }`}
-                disabled={isLoading || !inputText.trim() || messageLimitState.messagesLeft === 0}>
-                {isLoading ? (
-                  <ActivityIndicator size="small" color="white" />
-                ) : (
-                  <Ionicons name="arrow-forward" size={20} color="white" />
-                )}
+                onPress={toggleExpand}
+                className="mb-2 h-8 w-8 items-center justify-center self-start rounded-full bg-gray-200"
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <Animated.View style={animatedButtonStyle}>
+                  <Ionicons name="chevron-down" size={16} color="#6b7280" />
+                </Animated.View>
               </TouchableOpacity>
+
+              <View className="flex-row items-end">
+                <View className="mr-4 flex-1">
+                  <Animated.View style={animatedInputStyle}>
+                    <TextInput
+                      className="font-inter flex-1 rounded-2xl border-2 border-gray-200 px-5 py-4 text-base"
+                      placeholder={
+                        isPremium
+                          ? 'Type a message...'
+                          : messageLimitState.messagesLeft === 0
+                            ? 'Daily limit reached'
+                            : 'Type a message...'
+                      }
+                      value={inputText}
+                      onChangeText={setInputText}
+                      onSubmitEditing={handleInputSubmit}
+                      returnKeyType="send"
+                      multiline={true}
+                      editable={!isLoading && (isPremium || messageLimitState.messagesLeft > 0)}
+                      style={{
+                        opacity: !isPremium && messageLimitState.messagesLeft === 0 ? 0.5 : 1,
+                      }}
+                    />
+                  </Animated.View>
+                </View>
+
+                {/* Send Button */}
+                <TouchableOpacity
+                  onPress={handleInputSubmit}
+                  className={`h-[56px] w-[56px] items-center justify-center rounded-2xl ${
+                    isLoading ||
+                    !inputText.trim() ||
+                    (!isPremium && messageLimitState.messagesLeft === 0)
+                      ? 'bg-gray-300'
+                      : 'bg-primary'
+                  }`}
+                  disabled={
+                    isLoading ||
+                    !inputText.trim() ||
+                    (!isPremium && messageLimitState.messagesLeft === 0)
+                  }>
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <Ionicons name="arrow-forward" size={20} color="white" />
+                  )}
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
       </KeyboardAvoidingView>
-    </>
+    </View>
   );
 }

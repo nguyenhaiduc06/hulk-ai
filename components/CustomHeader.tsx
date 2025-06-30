@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { MessageLimitModal } from './MessageLimitModal';
+import { PremiumInfoModal } from './PremiumInfoModal';
+import { useSubscriptionStore } from '~/store/store';
 
 interface CustomHeaderProps {
   title: string;
@@ -19,19 +21,32 @@ export function CustomHeader({
 }: CustomHeaderProps) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const isPremium = useSubscriptionStore((state) => state.isPremium);
 
   const getMessageColor = () => {
+    if (isPremium) return '#8ee04e'; // Green for premium users
     if (messagesLeft === 0) return '#ef4444'; // Red
     if (messagesLeft <= 1) return '#f59e0b'; // Amber
     return '#8ee04e'; // Green (primary)
   };
 
   const getMessageIcon = () => {
+    if (isPremium) return 'diamond';
     return 'chatbubble';
   };
 
+  const getMessageText = () => {
+    if (isPremium) return 'Premium';
+    return `${messagesLeft}/${maxMessages}`;
+  };
+
   const handleMessageIndicatorPress = () => {
-    setShowModal(true);
+    if (isPremium) {
+      setShowPremiumModal(true);
+    } else {
+      setShowModal(true);
+    }
   };
 
   return (
@@ -54,11 +69,19 @@ export function CustomHeader({
         {/* Messages Left Indicator */}
         <TouchableOpacity
           onPress={handleMessageIndicatorPress}
-          className="flex-row items-center rounded-2xl border-2 border-gray-200 bg-gray-100 px-4 py-3"
+          className={`flex-row items-center rounded-2xl border-2 px-4 py-2 ${
+            isPremium ? 'border-primary bg-primary' : 'border-gray-200 bg-gray-100'
+          }`}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Ionicons name={getMessageIcon() as any} size={18} color={getMessageColor()} />
-          <Text className="font-clash-medium ml-2 text-sm" style={{ color: getMessageColor() }}>
-            {messagesLeft}/{maxMessages}
+          <Ionicons
+            name={getMessageIcon() as any}
+            size={18}
+            color={isPremium ? 'white' : getMessageColor()}
+          />
+          <Text
+            className="font-clash-medium ml-2 text-base"
+            style={{ color: isPremium ? 'white' : getMessageColor() }}>
+            {getMessageText()}
           </Text>
         </TouchableOpacity>
       </View>
@@ -70,6 +93,9 @@ export function CustomHeader({
         messagesLeft={messagesLeft}
         maxMessages={maxMessages}
       />
+
+      {/* Premium Info Modal */}
+      <PremiumInfoModal visible={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
     </>
   );
 }
