@@ -39,7 +39,7 @@ export function RecentChatCard({ chat }: RecentChatCardProps) {
       className="mr-6 w-80 rounded-3xl border-2 border-gray-100 bg-white p-6 shadow-lg">
       <View className="mb-3 flex-row items-start justify-between">
         <Text
-          className="font-clash-medium text-text-primary flex-1 text-lg leading-tight"
+          className="font-clash-semibold text-text-primary flex-1 text-lg leading-tight"
           numberOfLines={2}>
           {chat.title}
         </Text>

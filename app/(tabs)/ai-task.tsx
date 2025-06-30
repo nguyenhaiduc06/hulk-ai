@@ -192,17 +192,15 @@ export default function AITask() {
   const renderTaskCard = ({ item }: { item: TaskItem }) => (
     <TouchableOpacity
       onPress={() => handleTaskPress(item)}
-      className="m-2 flex-1 rounded-3xl border-2 border-gray-100 bg-white p-6 shadow-lg">
-      <View className="items-center">
-        <View className="bg-primary-light mb-4 h-16 w-16 items-center justify-center rounded-3xl">
-          <Text className="text-3xl">{item.emoji}</Text>
-        </View>
+      className="m-2 flex-1 rounded-3xl border-2 border-gray-100 bg-white p-4 shadow-lg">
+      <View className="items-start">
+        <Text className="mb-4 text-3xl">{item.emoji}</Text>
         <Text
-          className="font-clash-medium text-text-primary mb-2 text-center text-base"
+          className="font-clash-semibold text-text-primary mb-2 text-lg leading-tight"
           numberOfLines={2}>
           {item.title}
         </Text>
-        <Text className="font-inter text-text-secondary text-center text-sm" numberOfLines={3}>
+        <Text className="font-inter text-text-secondary text-sm" numberOfLines={3}>
           {item.description}
         </Text>
       </View>
@@ -216,7 +214,7 @@ export default function AITask() {
         selectedCategory === item.id ? 'bg-primary border-primary' : 'border-gray-200 bg-white'
       }`}>
       <Text
-        className={`font-clash-medium text-base ${
+        className={`font-clash-semibold text-base ${
           selectedCategory === item.id ? 'text-white' : 'text-text-secondary'
         }`}>
         {item.name}
@@ -250,7 +248,7 @@ export default function AITask() {
               keyExtractor={(item) => item.id}
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 24 }}
+              contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16 }}
             />
           </View>
 
@@ -261,7 +259,7 @@ export default function AITask() {
             keyExtractor={(item) => item.id}
             numColumns={2}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 24 }}
+            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 16 }}
           />
         </View>
       </View>
