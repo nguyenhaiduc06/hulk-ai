@@ -280,29 +280,124 @@ hulk-ai/
 
 ## 🎨 Design System
 
+### Brand Identity
+
+- **Vibe**: Round, funny, and cute design language
+- **Theme**: Light theme only
+- **Personality**: Friendly, approachable, and playful
+
+### Typography System
+
+- **Branding Font**: Clash Grotesk (Headings, Titles, Brand Elements)
+- **Body Font**: Inter (Body text, descriptions, UI elements)
+
+#### Font Weights & Styles
+
+| Font Family   | Weight   | Usage Example        |
+| ------------- | -------- | -------------------- |
+| Clash Grotesk | Bold     | Main titles (H1)     |
+| Clash Grotesk | Semibold | Section headers (H2) |
+| Clash Grotesk | Medium   | Card titles (H3)     |
+| Inter         | Regular  | Body text            |
+| Inter         | Light    | Captions, hints      |
+
+#### Sizing & Color Guidelines
+
+- **Title (H1):**
+  - Font: Clash Grotesk Bold
+  - Size: 32–40px (mobile responsive)
+  - Color: Primary text (`#1a1a1a`)
+  - Usage: Main screen titles, hero sections
+- **Section Header (H2):**
+  - Font: Clash Grotesk Semibold
+  - Size: 24–28px
+  - Color: Primary text (`#1a1a1a`)
+  - Usage: Section headers, modal titles
+- **Card Title (H3):**
+  - Font: Clash Grotesk Medium
+  - Size: 18–20px
+  - Color: Primary text (`#1a1a1a`)
+  - Usage: Card and list item titles
+- **Body Text:**
+  - Font: Inter Regular
+  - Size: 15–16px
+  - Color: Secondary text (`#6b7280`)
+  - Usage: Paragraphs, descriptions, chat messages
+- **Caption/Hint:**
+  - Font: Inter Light
+  - Size: 12–13px
+  - Color: Tertiary text (`#9ca3af`)
+  - Usage: Helper text, timestamps, subtle info
+
+**Note:**
+
+- Titles should always be noticeably larger than body text.
+- Body text should use a dimmer color (secondary or tertiary) to create clear hierarchy and visual separation from titles.
+- All text should use generous line height for readability (1.3–1.5x font size).
+- Avoid using all-caps except for small badges or labels.
+
 ### Color Palette
 
-- **Primary**: Indigo (#6366f1)
-- **Secondary**: Gray (#6b7280)
-- **Success**: Green (#10b981)
-- **Warning**: Amber (#f59e0b)
-- **Error**: Red (#ef4444)
-- **Info**: Cyan (#06b6d4)
-- **Premium**: Purple (#8b5cf6)
+- **Primary/Branding**: Green (#8ee04e) - Main brand color
+- **Secondary**: Light Green (#a7f26b) - Accent color
+- **Background**: White (#ffffff) - Clean backgrounds
+- **Surface**: Light Gray (#f8f9fa) - Card backgrounds
+- **Text Primary**: Dark Gray (#1a1a1a) - Main text
+- **Text Secondary**: Medium Gray (#6b7280) - Secondary text
+- **Text Tertiary**: Light Gray (#9ca3af) - Subtle text
+- **Success**: Green (#10b981) - Positive states
+- **Warning**: Orange (#f59e0b) - Warning states
+- **Error**: Red (#ef4444) - Error states
+- **Info**: Blue (#3b82f6) - Information states
 
-### Typography
+### Design Principles
 
-- **Headings**: Bold, clean sans-serif
-- **Body**: Readable, medium weight
-- **Code**: Monospace for technical content
+- **Rounded Corners**: Generous border radius (16px-24px) for cards and buttons
+- **Soft Shadows**: Subtle shadows for depth without harshness
+- **Playful Icons**: Rounded, friendly iconography
+- **Generous Spacing**: Comfortable padding and margins
+- **Friendly Interactions**: Smooth animations and micro-interactions
 
 ### Components
 
-- **Buttons**: Rounded, with hover states
-- **Cards**: Subtle shadows, rounded corners
-- **Inputs**: Clean borders, focus states
-- **Navigation**: Tab-based with icons
+- **Buttons**: Rounded with generous padding, friendly hover states
+- **Cards**: Soft shadows, rounded corners, comfortable spacing
+- **Inputs**: Rounded borders, friendly focus states
+- **Navigation**: Tab-based with rounded active states
 - **Modals**: Bottom sheet with handle and smooth animations
+- **Headers**: Clean with rounded message indicators
+
+### UI Implementation Best Practices
+
+#### Typography Hierarchy
+
+- **Section Titles**: Use `text-2xl font-clash-semibold` with `leading-tight` for main section headers
+- **Card Titles**: Use `text-lg font-clash-medium` with `leading-tight` for card and list item titles
+- **Body Text**: Use `text-base font-inter` for readable content
+- **Subtitles/Descriptions**: Use `text-text-tertiary` for dimmer, secondary information
+- **Line Heights**: Use `leading-tight` (1.1) for titles, `leading-normal` (1.3) for body text
+
+#### Layout & Spacing
+
+- **Card Layouts**: Emoji and title in one row, description in separate row below
+- **Emoji Sizing**: Use `text-3xl` for prominent emojis in cards
+- **Vertical Alignment**: Use `items-center` to align emoji with title text
+- **Compact Spacing**: Use `mb-3` for card content sections, avoid excessive padding
+- **Section Spacing**: Generous spacing between major sections (`mb-8`)
+
+#### Visual Hierarchy
+
+- **Title Prominence**: Section titles should be significantly larger than body text
+- **Color Contrast**: Use `text-text-primary` for titles, `text-text-tertiary` for subtitles
+- **Background Removal**: Remove backgrounds from emojis for cleaner look
+- **Consistent Sizing**: Maintain consistent text sizes across similar elements
+
+#### Component Patterns
+
+- **Suggestion Cards**: Emoji + title row, description row, compact spacing
+- **Section Headers**: Large bold titles with dimmer subtitles
+- **Card Titles**: Medium weight, tight line height, primary color
+- **Descriptive Text**: Always use tertiary color for secondary information
 
 ## 🔧 Development Guidelines
 

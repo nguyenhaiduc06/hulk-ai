@@ -16,10 +16,14 @@ export function ChatInputButton({ placeholder = 'Ask me anything...' }: ChatInpu
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className="w-full flex-row items-center rounded-full border border-gray-300 bg-white px-4 py-3 shadow-sm">
-      <Ionicons name="chatbubble-outline" size={20} color="#6b7280" />
-      <Text className="ml-3 flex-1 text-base text-gray-500">{placeholder}</Text>
-      <Ionicons name="arrow-forward" size={20} color="#6b7280" />
+      className="w-full flex-row items-center rounded-3xl border-2 border-gray-200 bg-white px-6 py-4 shadow-lg">
+      <View className="bg-primary mr-4 h-8 w-8 items-center justify-center rounded-full">
+        <Ionicons name="chatbubble" size={18} color="white" />
+      </View>
+      <Text className="text-text-secondary font-inter flex-1 text-lg">{placeholder}</Text>
+      <View className="bg-primary h-8 w-8 items-center justify-center rounded-full">
+        <Ionicons name="arrow-forward" size={18} color="white" />
+      </View>
     </TouchableOpacity>
   );
 }

@@ -1,3 +1,94 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom Font Classes */
+@layer base {
+  .font-clash-extralight {
+    font-family: 'ClashGrotesk-Extralight';
+  }
+
+  .font-clash-light {
+    font-family: 'ClashGrotesk-Light';
+  }
+
+  .font-clash-regular {
+    font-family: 'ClashGrotesk-Regular';
+  }
+
+  .font-clash-medium {
+    font-family: 'ClashGrotesk-Medium';
+  }
+
+  .font-clash-semibold {
+    font-family: 'ClashGrotesk-Semibold';
+  }
+
+  .font-clash-bold {
+    font-family: 'ClashGrotesk-Bold';
+  }
+
+  .font-inter {
+    font-family: 'Inter';
+  }
+
+  /* Custom line heights for titles */
+  .leading-tight {
+    line-height: 1.1;
+  }
+
+  .leading-snug {
+    line-height: 1.2;
+  }
+
+  .leading-normal {
+    line-height: 1.3;
+  }
+}
+
+/* Custom CSS Variables for Design System */
+:root {
+  --color-primary: #8ee04e;
+  --color-secondary: #a7f26b;
+  --color-background: #ffffff;
+  --color-surface: #f8f9fa;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+}
+
+/* Global Styles */
+body {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+/* Custom Component Styles */
+@layer components {
+  .btn-primary {
+    @apply font-clash-medium rounded-2xl bg-green-500 px-6 py-4 text-white shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply font-clash-medium rounded-2xl border border-gray-200 bg-gray-100 px-6 py-4 text-gray-700;
+  }
+
+  .card {
+    @apply rounded-3xl border border-gray-100 bg-white p-6 shadow-lg;
+  }
+
+  .input-field {
+    @apply font-inter rounded-2xl border-2 border-gray-200 bg-white px-4 py-3 focus:border-green-500 focus:outline-none;
+  }
+}

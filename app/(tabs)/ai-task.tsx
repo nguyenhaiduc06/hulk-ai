@@ -189,39 +189,35 @@ export default function AITask() {
     }
   };
 
-  const renderTaskCard = ({ item, index }: { item: TaskItem; index: number }) => {
-    const isLastItem = index === filteredTasks.length - 1;
-    const isOddNumberOfItems = filteredTasks.length % 2 === 1;
-
-    return (
-      <View
-        className={`mb-4 ${isLastItem && isOddNumberOfItems ? 'w-1/2' : 'flex-1'}`}
-        style={{ marginHorizontal: 4 }}>
-        <TouchableOpacity
-          className="aspect-square rounded-xl border border-gray-300 bg-white p-4"
-          onPress={() => handleTaskPress(item)}>
-          <View className="flex-1">
-            <Text className="mb-4 text-5xl">{item.emoji}</Text>
-            <Text className="mb-1 font-bold text-gray-900">{item.title}</Text>
-            <Text className="text-sm text-gray-500">{item.subtitle}</Text>
-          </View>
-        </TouchableOpacity>
+  const renderTaskCard = ({ item }: { item: TaskItem }) => (
+    <TouchableOpacity
+      onPress={() => handleTaskPress(item)}
+      className="m-2 flex-1 rounded-3xl border-2 border-gray-100 bg-white p-6 shadow-lg">
+      <View className="items-center">
+        <View className="bg-primary-light mb-4 h-16 w-16 items-center justify-center rounded-3xl">
+          <Text className="text-3xl">{item.emoji}</Text>
+        </View>
+        <Text
+          className="font-clash-medium text-text-primary mb-2 text-center text-base"
+          numberOfLines={2}>
+          {item.title}
+        </Text>
+        <Text className="font-inter text-text-secondary text-center text-sm" numberOfLines={3}>
+          {item.description}
+        </Text>
       </View>
-    );
-  };
+    </TouchableOpacity>
+  );
 
   const renderCategoryItem = ({ item }: { item: Category }) => (
     <TouchableOpacity
       onPress={() => setSelectedCategory(item.id)}
-      className={`mr-3 rounded-full border px-4 py-2 ${
-        selectedCategory === item.id ? 'border-transparent' : 'border-gray-300'
-      }`}
-      style={{
-        backgroundColor: selectedCategory === item.id ? item.color : 'transparent',
-      }}>
+      className={`mr-4 rounded-2xl border-2 px-6 py-3 ${
+        selectedCategory === item.id ? 'bg-primary border-primary' : 'border-gray-200 bg-white'
+      }`}>
       <Text
-        className={`text-sm font-medium ${
-          selectedCategory === item.id ? 'text-white' : 'text-gray-700'
+        className={`font-clash-medium text-base ${
+          selectedCategory === item.id ? 'text-white' : 'text-text-secondary'
         }`}>
         {item.name}
       </Text>
@@ -244,17 +240,17 @@ export default function AITask() {
         showBackButton={false}
       />
 
-      <View className="flex-1 bg-gray-50">
+      <View className="bg-surface flex-1">
         <View className="flex-1">
           {/* Category Filter */}
-          <View className="mb-6">
+          <View className="mb-8">
             <FlatList
               data={categories}
               renderItem={renderCategoryItem}
               keyExtractor={(item) => item.id}
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 16 }}
+              contentContainerStyle={{ paddingHorizontal: 24 }}
             />
           </View>
 
@@ -265,7 +261,7 @@ export default function AITask() {
             keyExtractor={(item) => item.id}
             numColumns={2}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 16 }}
+            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 24 }}
           />
         </View>
       </View>

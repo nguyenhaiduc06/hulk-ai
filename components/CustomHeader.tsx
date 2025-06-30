@@ -23,7 +23,7 @@ export function CustomHeader({
   const getMessageColor = () => {
     if (messagesLeft === 0) return '#ef4444'; // Red
     if (messagesLeft <= 1) return '#f59e0b'; // Amber
-    return '#10b981'; // Green
+    return '#8ee04e'; // Green (primary)
   };
 
   const getMessageIcon = () => {
@@ -38,17 +38,17 @@ export function CustomHeader({
 
   return (
     <>
-      <View className="pt-safe flex-row items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
+      <View className="pt-safe flex-row items-center justify-between border-b-2 border-gray-100 bg-white px-6 py-4">
         <View className="flex-1 flex-row items-center">
           {showBackButton && (
             <TouchableOpacity
               onPress={() => router.back()}
-              className="mr-3 p-1"
+              className="mr-4 rounded-2xl bg-gray-100 p-2"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <Ionicons name="arrow-back" size={24} color="#374151" />
             </TouchableOpacity>
           )}
-          <Text className="flex-1 text-lg font-semibold text-gray-900" numberOfLines={1}>
+          <Text className="font-clash-semibold text-text-primary flex-1 text-xl" numberOfLines={1}>
             {title}
           </Text>
         </View>
@@ -56,10 +56,10 @@ export function CustomHeader({
         {/* Messages Left Indicator */}
         <TouchableOpacity
           onPress={handleMessageIndicatorPress}
-          className="flex-row items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-2"
+          className="flex-row items-center rounded-2xl border-2 border-gray-200 bg-gray-100 px-4 py-3"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Ionicons name={getMessageIcon() as any} size={16} color={getMessageColor()} />
-          <Text className="ml-2 text-sm font-medium" style={{ color: getMessageColor() }}>
+          <Ionicons name={getMessageIcon() as any} size={18} color={getMessageColor()} />
+          <Text className="font-clash-medium ml-2 text-sm" style={{ color: getMessageColor() }}>
             {messagesLeft}/{maxMessages}
           </Text>
         </TouchableOpacity>

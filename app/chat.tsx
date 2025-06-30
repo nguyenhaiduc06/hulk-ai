@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import { Container } from '~/components/Container';
 import { CustomHeader } from '~/components/CustomHeader';
@@ -225,23 +226,23 @@ export default function Chat() {
               {/* Daily limit reached message with premium CTA */}
               {messageLimitState.messagesLeft === 0 && (
                 <View className="mb-4 items-center">
-                  <View className="max-w-[80%] rounded-2xl border-2 border-indigo-500 bg-white p-4 shadow-lg">
-                    <View className="mb-3 flex-row items-center">
-                      <View className="mr-3 h-8 w-8 items-center justify-center rounded-full bg-indigo-100">
-                        <Text className="text-lg text-indigo-600">💎</Text>
+                  <View className="border-primary max-w-[80%] rounded-3xl border-2 bg-white p-6 shadow-lg">
+                    <View className="mb-4 flex-row items-center">
+                      <View className="bg-primary-light mr-4 h-10 w-10 items-center justify-center rounded-2xl">
+                        <Text className="text-lg text-white">💎</Text>
                       </View>
-                      <Text className="text-base font-semibold text-indigo-900">
+                      <Text className="font-clash-semibold text-text-primary text-lg">
                         Upgrade to Premium
                       </Text>
                     </View>
-                    <Text className="mb-4 text-sm font-medium text-gray-700">
+                    <Text className="font-inter text-text-secondary mb-6 text-base">
                       You've reached your daily message limit. Upgrade to Premium for unlimited
                       messages, faster responses, and advanced AI models.
                     </Text>
                     <TouchableOpacity
                       onPress={handleUpgradeToPremium}
-                      className="items-center rounded-xl bg-indigo-500 px-4 py-3">
-                      <Text className="font-semibold text-white">Upgrade Now</Text>
+                      className="bg-primary items-center rounded-2xl px-6 py-4">
+                      <Text className="font-clash-medium text-base text-white">Upgrade Now</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -249,9 +250,9 @@ export default function Chat() {
             </ScrollView>
 
             {/* Input */}
-            <View className="flex-row items-center border-t border-gray-200 px-4 py-3">
+            <View className="flex-row items-center border-t-2 border-gray-100 px-6 py-4">
               <TextInput
-                className="mr-3 flex-1 rounded-full border border-gray-300 px-4 py-3"
+                className="font-inter mr-4 flex-1 rounded-2xl border-2 border-gray-200 px-5 py-4 text-base"
                 placeholder={
                   messageLimitState.messagesLeft === 0 ? 'Daily limit reached' : 'Type a message...'
                 }
@@ -268,16 +269,16 @@ export default function Chat() {
               />
               <TouchableOpacity
                 onPress={handleInputSubmit}
-                className={`h-12 w-12 items-center justify-center rounded-full ${
+                className={`h-14 w-14 items-center justify-center rounded-2xl ${
                   isLoading || !inputText.trim() || messageLimitState.messagesLeft === 0
-                    ? 'bg-gray-400'
-                    : 'bg-indigo-500'
+                    ? 'bg-gray-300'
+                    : 'bg-primary'
                 }`}
                 disabled={isLoading || !inputText.trim() || messageLimitState.messagesLeft === 0}>
                 {isLoading ? (
                   <ActivityIndicator size="small" color="white" />
                 ) : (
-                  <Text className="text-lg text-white">➤</Text>
+                  <Ionicons name="send" size={20} color="white" />
                 )}
               </TouchableOpacity>
             </View>

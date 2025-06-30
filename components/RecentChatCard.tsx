@@ -36,21 +36,23 @@ export function RecentChatCard({ chat }: RecentChatCardProps) {
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className="mr-4 w-72 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <View className="mb-2 flex-row items-start justify-between">
-        <Text className="flex-1 text-sm font-semibold text-gray-900" numberOfLines={2}>
+      className="mr-6 w-80 rounded-3xl border-2 border-gray-100 bg-white p-6 shadow-lg">
+      <View className="mb-3 flex-row items-start justify-between">
+        <Text
+          className="font-clash-medium text-text-primary flex-1 text-lg leading-tight"
+          numberOfLines={2}>
           {chat.title}
         </Text>
         {chat.taskType && (
-          <View className={`rounded-full px-2 py-1 ${getTaskTypeColor(chat.taskType)}`}>
-            <Text className="text-xs font-medium">{chat.taskType}</Text>
+          <View className={`rounded-2xl px-3 py-1 ${getTaskTypeColor(chat.taskType)}`}>
+            <Text className="font-clash-medium text-xs">{chat.taskType}</Text>
           </View>
         )}
       </View>
-      <Text className="mb-3 text-xs text-gray-500" numberOfLines={2}>
+      <Text className="font-inter text-text-secondary mb-4 text-sm" numberOfLines={2}>
         {chat.description}
       </Text>
-      <Text className="text-xs text-gray-400">{chat.timestamp}</Text>
+      <Text className="font-inter text-text-tertiary text-xs">{chat.timestamp}</Text>
     </TouchableOpacity>
   );
 }

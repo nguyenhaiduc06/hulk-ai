@@ -42,28 +42,34 @@ export default function Home() {
         showBackButton={false}
       />
 
-      <ScrollView className="flex-1 bg-gray-50" showsVerticalScrollIndicator={false}>
+      <ScrollView className="bg-surface flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="px-4 pb-6 pt-4">
-          <Text className="mb-2 text-2xl font-bold text-gray-900">Hello! 👋</Text>
-          <Text className="text-gray-600">How can I help you today?</Text>
+        <View className="px-6 pb-8 pt-6">
+          <Text className="font-clash-semibold text-text-primary text-2xl leading-tight">
+            Hello! ��
+          </Text>
+          <Text className="font-inter text-text-tertiary text-lg">How can I help you today?</Text>
         </View>
 
         {/* Chat Section */}
-        <View className="mb-8 px-4">
+        <View className="mb-8 px-6">
           <ChatInputButton />
         </View>
 
         {/* Suggestions Section */}
         <View className="mb-8">
-          <View className="mb-4 px-4">
-            <Text className="mb-1 text-lg font-semibold text-gray-900">Suggestions</Text>
-            <Text className="text-sm text-gray-500">Popular ways to get started</Text>
+          <View className="mb-4 px-6">
+            <Text className="font-clash-semibold text-text-primary text-2xl leading-tight">
+              Suggestions
+            </Text>
+            <Text className="font-inter text-text-tertiary text-base">
+              Popular ways to get started
+            </Text>
           </View>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16 }}
+            contentContainerStyle={{ paddingHorizontal: 24 }}
             className="flex-row">
             {suggestionCards.map((suggestion) => (
               <SuggestionCard key={suggestion.id} suggestion={suggestion} />
@@ -73,14 +79,18 @@ export default function Home() {
 
         {/* Recent Chats Section */}
         <View className="mb-8">
-          <View className="mb-4 px-4">
-            <Text className="mb-1 text-lg font-semibold text-gray-900">Recent Chats</Text>
-            <Text className="text-sm text-gray-500">Continue where you left off</Text>
+          <View className="mb-4 px-6">
+            <Text className="font-clash-semibold text-text-primary text-2xl leading-tight">
+              Recent Chats
+            </Text>
+            <Text className="font-inter text-text-tertiary text-base">
+              Continue where you left off
+            </Text>
           </View>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16 }}
+            contentContainerStyle={{ paddingHorizontal: 24 }}
             className="flex-row">
             {recentChats.map((chat) => (
               <RecentChatCard key={chat.id} chat={chat} />

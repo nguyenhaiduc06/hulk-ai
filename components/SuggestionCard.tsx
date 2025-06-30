@@ -21,18 +21,20 @@ export function SuggestionCard({ suggestion }: SuggestionCardProps) {
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className="mr-4 w-64 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <View className="mb-3 flex-row items-start">
-        <Text className="mr-3 text-2xl">{suggestion.emoji}</Text>
+      className="mr-6 w-72 rounded-3xl border-2 border-gray-100 bg-white p-6 shadow-lg">
+      <View className="mb-3 flex-row items-center">
+        <Text className="mr-4 text-3xl">{suggestion.emoji}</Text>
         <View className="flex-1">
-          <Text className="mb-1 text-sm font-semibold text-gray-900" numberOfLines={2}>
+          <Text
+            className="font-clash-medium text-text-primary text-lg leading-tight"
+            numberOfLines={2}>
             {suggestion.title}
-          </Text>
-          <Text className="text-xs text-gray-500" numberOfLines={3}>
-            {suggestion.description}
           </Text>
         </View>
       </View>
+      <Text className="font-inter text-text-secondary text-sm" numberOfLines={3}>
+        {suggestion.description}
+      </Text>
     </TouchableOpacity>
   );
 }
