@@ -30,7 +30,7 @@ export function CustomHeader({
   };
 
   return (
-    <View className="flex-row items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
+    <View className="pt-safe flex-row items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
       <View className="flex-1 flex-row items-center">
         {showBackButton && (
           <TouchableOpacity

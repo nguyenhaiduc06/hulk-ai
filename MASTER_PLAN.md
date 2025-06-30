@@ -114,6 +114,7 @@ hulk-ai/
   - Persistent storage using AsyncStorage
   - Graceful handling when limit is reached
   - User-friendly alerts and disabled states
+  - **Consistent across all screens**: Custom header implemented on Home, AI Tasks, Chat, and Details screens
 
 ### 7. Enhanced Home Screen
 
@@ -131,6 +132,18 @@ hulk-ai/
     - Task type badges with color coding
     - Timestamps for each conversation
     - Tap to continue conversation with pre-filled prompt
+
+### 8. Unified Custom Header System
+
+- **Status**: ✅ Complete
+- **Description**: Consistent custom header across all app screens
+- **Features**:
+  - **Message Limit Indicator**: Shows remaining daily messages on all screens
+  - **Safe Area Support**: Proper handling of device notches and status bars
+  - **Consistent Design**: Uniform header design across Home, AI Tasks, Chat, and Details screens
+  - **Dynamic Titles**: Context-aware titles for each screen
+  - **Back Button Logic**: Shows/hides back button based on navigation context
+  - **Real-time Updates**: Message limit updates in real-time across all screens
 
 ## 🚧 In Progress Features
 

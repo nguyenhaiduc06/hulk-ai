@@ -156,7 +156,7 @@ export default function Chat() {
   };
 
   return (
-    <View className="py-safe flex-1">
+    <View className="pb-safe flex-1">
       {/* Custom Header */}
       <CustomHeader
         title={taskTitle ? `${taskTitle} Assistant` : 'Chat'}
@@ -173,6 +173,7 @@ export default function Chat() {
             <ScrollView
               ref={scrollViewRef}
               className="flex-1 px-4"
+              contentContainerClassName="py-4"
               showsVerticalScrollIndicator={false}
               onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
               onLayout={() => scrollViewRef.current?.scrollToEnd({ animated: true })}>

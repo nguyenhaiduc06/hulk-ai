@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
+import { Stack } from 'expo-router';
 
 import { Container } from '~/components/Container';
+import { CustomHeader } from '~/components/CustomHeader';
+import { getMessageLimitState, DAILY_MESSAGE_LIMIT } from '~/utils/messageLimit';
 
 type TaskItem = {
   id: string;
@@ -142,7 +145,21 @@ const taskItems: TaskItem[] = [
 
 export default function AITask() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [messageLimitState, setMessageLimitState] = useState({
+    messagesLeft: DAILY_MESSAGE_LIMIT,
+    maxMessages: DAILY_MESSAGE_LIMIT,
+    lastResetDate: new Date().toDateString(),
+  });
   const router = useRouter();
+
+  // Load message limit state on component mount
+  useEffect(() => {
+    const loadMessageLimitState = async () => {
+      const state = await getMessageLimitState();
+      setMessageLimitState(state);
+    };
+    loadMessageLimitState();
+  }, []);
 
   const filteredTasks =
     selectedCategory === 'all'
@@ -212,30 +229,46 @@ export default function AITask() {
   );
 
   return (
-    <View className="pt-safe flex-1">
-      <View className="flex-1">
-        {/* Category Filter */}
-        <View className="mb-6">
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: false, // Hide default header to use custom header
+        }}
+      />
+
+      {/* Custom Header */}
+      <CustomHeader
+        title="AI Tasks"
+        messagesLeft={messageLimitState.messagesLeft}
+        maxMessages={messageLimitState.maxMessages}
+        showBackButton={false}
+      />
+
+      <View className="flex-1 bg-gray-50">
+        <View className="flex-1">
+          {/* Category Filter */}
+          <View className="mb-6">
+            <FlatList
+              data={categories}
+              renderItem={renderCategoryItem}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 16 }}
+            />
+          </View>
+
+          {/* Task Grid */}
           <FlatList
-            data={categories}
-            renderItem={renderCategoryItem}
+            data={filteredTasks}
+            renderItem={renderTaskCard}
             keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16 }}
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 16 }}
           />
         </View>
-
-        {/* Task Grid */}
-        <FlatList
-          data={filteredTasks}
-          renderItem={renderTaskCard}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 16 }}
-        />
       </View>
-    </View>
+    </>
   );
 }

@@ -1,15 +1,48 @@
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Stack } from 'expo-router';
+import { useState, useEffect } from 'react';
 
 import { ChatInputButton } from '~/components/ChatInputButton';
 import { SuggestionCard } from '~/components/SuggestionCard';
 import { RecentChatCard } from '~/components/RecentChatCard';
+import { CustomHeader } from '~/components/CustomHeader';
 import { suggestionCards, recentChats } from '~/utils/mockData';
+import { getMessageLimitState, DAILY_MESSAGE_LIMIT } from '~/utils/messageLimit';
 
 export default function Home() {
+  const [messageLimitState, setMessageLimitState] = useState({
+    messagesLeft: DAILY_MESSAGE_LIMIT,
+    maxMessages: DAILY_MESSAGE_LIMIT,
+    lastResetDate: new Date().toDateString(),
+  });
+
+  // Load message limit state on component mount
+  useEffect(() => {
+    const loadMessageLimitState = async () => {
+      const state = await getMessageLimitState();
+      setMessageLimitState(state);
+    };
+    loadMessageLimitState();
+  }, []);
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: false, // Hide default header to use custom header
+        }}
+      />
+
+      {/* Custom Header */}
+      <CustomHeader
+        title="Hulk AI"
+        messagesLeft={messageLimitState.messagesLeft}
+        maxMessages={messageLimitState.maxMessages}
+        showBackButton={false}
+      />
+
+      <ScrollView className="flex-1 bg-gray-50" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="px-4 pb-6 pt-4">
           <Text className="mb-2 text-2xl font-bold text-gray-900">Hello! 👋</Text>
@@ -58,6 +91,6 @@ export default function Home() {
         {/* Bottom spacing */}
         <View className="h-8" />
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 }
