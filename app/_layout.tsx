@@ -7,7 +7,7 @@ export default function Layout() {
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="details" options={{ title: 'Details' }} />
-      <Stack.Screen name="chat" options={{ title: 'Chat' }} />
+      <Stack.Screen name="chat" options={{ title: 'Chat', headerShown: false }} />
     </Stack>
   );
 }

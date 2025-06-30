@@ -9,10 +9,19 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import { Container } from '~/components/Container';
+import { CustomHeader } from '~/components/CustomHeader';
 import { generateResponse, ChatMessage } from '~/utils/openai';
+import {
+  getMessageLimitState,
+  incrementMessageCount,
+  canSendMessage,
+  DAILY_MESSAGE_LIMIT,
+  MessageLimitState,
+} from '~/utils/messageLimit';
 
 type Message = {
   id: string;
@@ -26,7 +35,22 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [messageLimitState, setMessageLimitState] = useState<MessageLimitState>({
+    messagesLeft: DAILY_MESSAGE_LIMIT,
+    maxMessages: DAILY_MESSAGE_LIMIT,
+    lastResetDate: new Date().toDateString(),
+  });
   const scrollViewRef = useRef<ScrollView>(null);
+
+  // Load message limit state on component mount
+  useEffect(() => {
+    loadMessageLimitState();
+  }, []);
+
+  const loadMessageLimitState = async () => {
+    const state = await getMessageLimitState();
+    setMessageLimitState(state);
+  };
 
   // Initialize with welcome message and optional initial prompt
   useEffect(() => {
@@ -55,9 +79,24 @@ export default function Chat() {
 
   const sendMessage = async () => {
     if (inputText.trim() && !isLoading) {
+      // Check if user can send a message
+      const canSend = await canSendMessage();
+      if (!canSend) {
+        Alert.alert(
+          'Daily Limit Reached',
+          'You have reached your daily message limit of 5 messages. Please try again tomorrow.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+
       const userMessage = inputText.trim();
       setInputText('');
       setIsLoading(true);
+
+      // Increment message count
+      const newLimitState = await incrementMessageCount();
+      setMessageLimitState(newLimitState);
 
       // Add user message
       const newUserMessage: Message = {
@@ -104,18 +143,31 @@ export default function Chat() {
     }
   };
 
+  const handleInputSubmit = async () => {
+    if (messageLimitState.messagesLeft <= 0) {
+      Alert.alert(
+        'Daily Limit Reached',
+        'You have reached your daily message limit of 5 messages. Please try again tomorrow.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+    await sendMessage();
+  };
+
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: taskTitle ? `${taskTitle} Assistant` : 'Chat',
-          headerBackTitle: 'Back',
-        }}
+    <View className="py-safe flex-1">
+      {/* Custom Header */}
+      <CustomHeader
+        title={taskTitle ? `${taskTitle} Assistant` : 'Chat'}
+        messagesLeft={messageLimitState.messagesLeft}
+        maxMessages={messageLimitState.maxMessages}
       />
+
       <KeyboardAvoidingView
-        // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}>
-        <View className="p-safe flex-1">
+        <View className="flex-1">
           <View className="flex-1">
             {/* Messages */}
             <ScrollView
@@ -160,27 +212,45 @@ export default function Chat() {
                   </View>
                 </View>
               )}
+
+              {/* Daily limit reached message */}
+              {messageLimitState.messagesLeft === 0 && (
+                <View className="mb-4 items-center">
+                  <View className="max-w-[80%] rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+                    <Text className="text-center font-medium text-red-700">
+                      Daily message limit reached. You can send 5 new messages tomorrow.
+                    </Text>
+                  </View>
+                </View>
+              )}
             </ScrollView>
 
             {/* Input */}
             <View className="flex-row items-center border-t border-gray-200 px-4 py-3">
               <TextInput
                 className="mr-3 flex-1 rounded-full border border-gray-300 px-4 py-3"
-                placeholder="Type a message..."
+                placeholder={
+                  messageLimitState.messagesLeft === 0 ? 'Daily limit reached' : 'Type a message...'
+                }
                 value={inputText}
                 onChangeText={setInputText}
-                onSubmitEditing={sendMessage}
+                onSubmitEditing={handleInputSubmit}
                 returnKeyType="send"
                 multiline={false}
                 blurOnSubmit={true}
-                editable={!isLoading}
+                editable={!isLoading && messageLimitState.messagesLeft > 0}
+                style={{
+                  opacity: messageLimitState.messagesLeft === 0 ? 0.5 : 1,
+                }}
               />
               <TouchableOpacity
-                onPress={sendMessage}
+                onPress={handleInputSubmit}
                 className={`h-12 w-12 items-center justify-center rounded-full ${
-                  isLoading || !inputText.trim() ? 'bg-gray-400' : 'bg-indigo-500'
+                  isLoading || !inputText.trim() || messageLimitState.messagesLeft === 0
+                    ? 'bg-gray-400'
+                    : 'bg-indigo-500'
                 }`}
-                disabled={isLoading || !inputText.trim()}>
+                disabled={isLoading || !inputText.trim() || messageLimitState.messagesLeft === 0}>
                 {isLoading ? (
                   <ActivityIndicator size="small" color="white" />
                 ) : (
@@ -191,6 +261,6 @@ export default function Chat() {
           </View>
         </View>
       </KeyboardAvoidingView>
-    </>
+    </View>
   );
 }
