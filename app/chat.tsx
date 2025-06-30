@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState, useRef, useEffect } from 'react';
 import {
   View,
@@ -32,6 +32,7 @@ type Message = {
 
 export default function Chat() {
   const { initialPrompt, taskTitle } = useLocalSearchParams();
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -155,8 +156,18 @@ export default function Chat() {
     await sendMessage();
   };
 
+  const handleUpgradeToPremium = () => {
+    router.push('/paywall');
+  };
+
   return (
-    <View className="pb-safe flex-1">
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: false, // Hide default header to use custom header
+        }}
+      />
+
       {/* Custom Header */}
       <CustomHeader
         title={taskTitle ? `${taskTitle} Assistant` : 'Chat'}
@@ -164,16 +175,13 @@ export default function Chat() {
         maxMessages={messageLimitState.maxMessages}
       />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}>
+      <KeyboardAvoidingView style={{ flex: 1 }}>
         <View className="flex-1">
           <View className="flex-1">
             {/* Messages */}
             <ScrollView
               ref={scrollViewRef}
               className="flex-1 px-4"
-              contentContainerClassName="py-4"
               showsVerticalScrollIndicator={false}
               onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
               onLayout={() => scrollViewRef.current?.scrollToEnd({ animated: true })}>
@@ -214,13 +222,27 @@ export default function Chat() {
                 </View>
               )}
 
-              {/* Daily limit reached message */}
+              {/* Daily limit reached message with premium CTA */}
               {messageLimitState.messagesLeft === 0 && (
                 <View className="mb-4 items-center">
-                  <View className="max-w-[80%] rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
-                    <Text className="text-center font-medium text-red-700">
-                      Daily message limit reached. You can send 5 new messages tomorrow.
+                  <View className="max-w-[80%] rounded-2xl border-2 border-indigo-500 bg-white p-4 shadow-lg">
+                    <View className="mb-3 flex-row items-center">
+                      <View className="mr-3 h-8 w-8 items-center justify-center rounded-full bg-indigo-100">
+                        <Text className="text-lg text-indigo-600">💎</Text>
+                      </View>
+                      <Text className="text-base font-semibold text-indigo-900">
+                        Upgrade to Premium
+                      </Text>
+                    </View>
+                    <Text className="mb-4 text-sm font-medium text-gray-700">
+                      You've reached your daily message limit. Upgrade to Premium for unlimited
+                      messages, faster responses, and advanced AI models.
                     </Text>
+                    <TouchableOpacity
+                      onPress={handleUpgradeToPremium}
+                      className="items-center rounded-xl bg-indigo-500 px-4 py-3">
+                      <Text className="font-semibold text-white">Upgrade Now</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               )}
@@ -262,6 +284,6 @@ export default function Chat() {
           </View>
         </View>
       </KeyboardAvoidingView>
-    </View>
+    </>
   );
 }

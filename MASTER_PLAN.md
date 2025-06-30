@@ -144,6 +144,32 @@ hulk-ai/
   - **Dynamic Titles**: Context-aware titles for each screen
   - **Back Button Logic**: Shows/hides back button based on navigation context
   - **Real-time Updates**: Message limit updates in real-time across all screens
+  - **Interactive Indicator**: Tappable message counter that shows bottom sheet modal
+
+### 9. Paywall & Premium Features
+
+- **Status**: ✅ Complete
+- **Description**: Premium subscription system with paywall screen and upgrade CTAs
+- **Features**:
+  - **Paywall Screen**: Modern, feature-rich subscription screen
+    - Premium features showcase with icons and descriptions
+    - Monthly ($9.99) and yearly ($99.99) subscription plans
+    - User testimonials and social proof
+    - Free trial promotion (7-day trial)
+    - Professional gradient design with premium branding
+  - **Bottom Sheet Modal**: Interactive message limit information
+    - Shows when tapping message indicator in header
+    - Explains free plan benefits (5 messages/day, basic AI, standard response times)
+    - Premium upgrade CTA with feature highlights
+    - "Maybe Later" and "Upgrade Now" action buttons
+  - **Premium CTAs in Chat**: Upgrade prompts when limit reached
+    - Gradient premium card in chat when no messages left
+    - Clear value proposition and upgrade button
+    - Seamless navigation to paywall screen
+  - **Navigation Integration**: Smooth flow from CTAs to paywall
+    - Direct navigation from header modal
+    - Direct navigation from chat CTA
+    - Proper back navigation handling
 
 ## 🚧 In Progress Features
 
@@ -185,6 +211,12 @@ hulk-ai/
   - Task favorites
   - Task completion tracking
   - Task performance analytics
+
+- [ ] **Premium Subscription Integration**
+  - Real payment processing (Stripe/Apple Pay/Google Pay)
+  - Subscription status management
+  - Premium feature unlocking
+  - Subscription analytics and tracking
 
 ### Phase 2: Advanced Features (Next 1-2 months)
 
@@ -256,6 +288,7 @@ hulk-ai/
 - **Warning**: Amber (#f59e0b)
 - **Error**: Red (#ef4444)
 - **Info**: Cyan (#06b6d4)
+- **Premium**: Purple (#8b5cf6)
 
 ### Typography
 
@@ -269,6 +302,7 @@ hulk-ai/
 - **Cards**: Subtle shadows, rounded corners
 - **Inputs**: Clean borders, focus states
 - **Navigation**: Tab-based with icons
+- **Modals**: Bottom sheet with handle and smooth animations
 
 ## 🔧 Development Guidelines
 
@@ -316,6 +350,7 @@ hulk-ai/
 - Lifetime value
 - Conversion rate
 - Revenue per user
+- Premium subscription conversion rate
 
 ## 🚀 Deployment Strategy
 
@@ -409,6 +444,18 @@ hulk-ai/
   - Horizontal scrollable recent chats with mock data
   - Task type badges and timestamps
   - Seamless navigation to chat with pre-filled prompts
+
+- ✅ **Unified Custom Header System**: Consistent custom header across all app screens
+  - Message limit indicator on all screens
+  - Safe area support with pt-safe class
+  - Interactive message counter with bottom sheet modal
+  - Dynamic titles and back button logic
+
+- ✅ **Paywall & Premium Features**: Complete premium subscription system
+  - Modern paywall screen with feature showcase and pricing plans
+  - Bottom sheet modal for message limit information
+  - Premium CTAs in chat when limit reached
+  - Seamless navigation between CTAs and paywall screen
 
 ---
 

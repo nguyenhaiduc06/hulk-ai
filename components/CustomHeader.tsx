@@ -1,6 +1,8 @@
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { MessageLimitModal } from './MessageLimitModal';
 
 interface CustomHeaderProps {
   title: string;
@@ -16,6 +18,7 @@ export function CustomHeader({
   showBackButton = true,
 }: CustomHeaderProps) {
   const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
 
   const getMessageColor = () => {
     if (messagesLeft === 0) return '#ef4444'; // Red
@@ -29,29 +32,46 @@ export function CustomHeader({
     return 'chatbubble';
   };
 
+  const handleMessageIndicatorPress = () => {
+    setShowModal(true);
+  };
+
   return (
-    <View className="pt-safe flex-row items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
-      <View className="flex-1 flex-row items-center">
-        {showBackButton && (
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="mr-3 p-1"
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="arrow-back" size={24} color="#374151" />
-          </TouchableOpacity>
-        )}
-        <Text className="flex-1 text-lg font-semibold text-gray-900" numberOfLines={1}>
-          {title}
-        </Text>
+    <>
+      <View className="pt-safe flex-row items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
+        <View className="flex-1 flex-row items-center">
+          {showBackButton && (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="mr-3 p-1"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <Ionicons name="arrow-back" size={24} color="#374151" />
+            </TouchableOpacity>
+          )}
+          <Text className="flex-1 text-lg font-semibold text-gray-900" numberOfLines={1}>
+            {title}
+          </Text>
+        </View>
+
+        {/* Messages Left Indicator */}
+        <TouchableOpacity
+          onPress={handleMessageIndicatorPress}
+          className="flex-row items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-2"
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Ionicons name={getMessageIcon() as any} size={16} color={getMessageColor()} />
+          <Text className="ml-2 text-sm font-medium" style={{ color: getMessageColor() }}>
+            {messagesLeft}/{maxMessages}
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Messages Left Indicator */}
-      <View className="flex-row items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-2">
-        <Ionicons name={getMessageIcon() as any} size={16} color={getMessageColor()} />
-        <Text className="ml-2 text-sm font-medium" style={{ color: getMessageColor() }}>
-          {messagesLeft}/{maxMessages}
-        </Text>
-      </View>
-    </View>
+      {/* Message Limit Modal */}
+      <MessageLimitModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        messagesLeft={messagesLeft}
+        maxMessages={maxMessages}
+      />
+    </>
   );
 }
