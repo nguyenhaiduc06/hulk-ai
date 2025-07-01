@@ -1,11 +1,11 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { useAIModelStore, useSubscriptionStore } from '~/store/store';
 import { MessageLimitModal } from './MessageLimitModal';
-import { PremiumInfoModal } from './PremiumInfoModal';
 import { ModelSelectionModal } from './ModelSelectionModal';
-import { useSubscriptionStore, useAIModelStore } from '~/store/store';
+import { PremiumInfoModal } from './PremiumInfoModal';
 
 interface CustomHeaderProps {
   title: string;
@@ -81,7 +81,7 @@ export function CustomHeader({
           {showBackButton && (
             <TouchableOpacity
               onPress={() => router.back()}
-              className="mr-4 rounded-2xl bg-gray-100 p-2"
+              className="mr-4 h-10 w-10 items-center justify-center rounded-2xl bg-gray-100"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <Ionicons name="arrow-back" size={24} color="#374151" />
             </TouchableOpacity>
@@ -89,9 +89,9 @@ export function CustomHeader({
           {showModelSelector ? (
             <TouchableOpacity
               onPress={handleModelSelectorPress}
-              className="flex-1 flex-row items-center rounded-2xl bg-gray-100 px-4 py-3"
+              className="mr-4 h-10 flex-1 flex-row items-center rounded-2xl bg-gray-100 px-4"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-              <Ionicons name="settings-outline" size={20} color="#374151" />
+              <Ionicons name="sparkles" size={16} color="#374151" />
               <Text
                 className="ml-2 flex-1 font-clash-medium text-lg text-text-primary"
                 numberOfLines={1}>
@@ -112,18 +112,10 @@ export function CustomHeader({
           {/* Messages Left Indicator */}
           <TouchableOpacity
             onPress={handleMessageIndicatorPress}
-            className={`flex-row items-center rounded-2xl border-2 px-4 py-2 ${
-              isPremium ? 'border-primary bg-primary' : 'border-gray-200 bg-gray-100'
-            }`}
+            className="h-10 flex-row items-center rounded-2xl bg-gray-100 px-4"
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons
-              name={getMessageIcon() as any}
-              size={18}
-              color={isPremium ? 'white' : getMessageColor()}
-            />
-            <Text
-              className="ml-2 font-clash-medium text-base"
-              style={{ color: isPremium ? 'white' : getMessageColor() }}>
+            <Ionicons name={getMessageIcon() as any} size={18} color={getMessageColor()} />
+            <Text className="ml-2 font-clash-medium text-base" style={{ color: getMessageColor() }}>
               {getMessageText()}
             </Text>
           </TouchableOpacity>
@@ -132,7 +124,7 @@ export function CustomHeader({
           {showSettingsButton && (
             <TouchableOpacity
               onPress={onSettingsPress}
-              className="rounded-2xl bg-gray-100 p-2"
+              className="h-10 w-10 items-center justify-center rounded-2xl bg-gray-100"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <Ionicons name="settings-outline" size={20} color="#374151" />
             </TouchableOpacity>
