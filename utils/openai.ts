@@ -13,7 +13,9 @@ export interface ChatMessage {
 
 export async function generateResponse(
   userMessage: string,
-  conversationHistory: ChatMessage[] = []
+  conversationHistory: ChatMessage[] = [],
+  selectedModel: string = 'gpt-4o-mini',
+  systemPrompt?: string
 ): Promise<string> {
   try {
     // Create conversation context
@@ -21,6 +23,7 @@ export async function generateResponse(
       {
         role: 'system',
         content:
+          systemPrompt ||
           'You are a helpful and friendly AI assistant. Keep your responses concise and engaging. Be conversational and helpful.',
       },
       ...conversationHistory,
@@ -31,7 +34,7 @@ export async function generateResponse(
     ];
 
     const response = await client.chat.completions.create({
-      model: 'gpt-4.1-nano', // Updated to GPT-4.1-nano
+      model: selectedModel,
       messages: messages as any,
       max_tokens: 150, // Limit response length for chat
       temperature: 0.7, // Add some creativity
@@ -59,16 +62,29 @@ export async function generateResponse(
 }
 
 // Alternative function for simple responses (like the example you provided)
-export async function generateSimpleResponse(prompt: string): Promise<string> {
+export async function generateSimpleResponse(
+  prompt: string,
+  selectedModel: string = 'gpt-4o-mini',
+  systemPrompt?: string
+): Promise<string> {
   try {
+    const messages: any[] = [];
+
+    if (systemPrompt) {
+      messages.push({
+        role: 'system',
+        content: systemPrompt,
+      });
+    }
+
+    messages.push({
+      role: 'user',
+      content: prompt,
+    });
+
     const response = await client.chat.completions.create({
-      model: 'gpt-4.1-nano', // Updated to GPT-4.1-nano
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
+      model: selectedModel,
+      messages,
       max_tokens: 100,
       temperature: 0.7,
     });

@@ -29,7 +29,7 @@ import {
   DAILY_MESSAGE_LIMIT,
   MessageLimitState,
 } from '~/utils/messageLimit';
-import { useSubscriptionStore } from '~/store/store';
+import { useSubscriptionStore, useAIModelStore } from '~/store/store';
 
 type Message = {
   id: string;
@@ -52,6 +52,7 @@ export default function Chat() {
   });
   const scrollViewRef = useRef<ScrollView>(null);
   const isPremium = useSubscriptionStore((state) => state.isPremium);
+  const { selectedModel, getCurrentModel } = useAIModelStore();
   const expandValue = useSharedValue(0);
 
   // Load message limit state on component mount
@@ -133,7 +134,13 @@ export default function Chat() {
           }));
 
         // Generate AI response
-        const aiResponse = await generateResponse(userMessage, conversationHistory);
+        const currentModel = getCurrentModel();
+        const aiResponse = await generateResponse(
+          userMessage,
+          conversationHistory,
+          currentModel?.model || selectedModel,
+          currentModel?.systemPrompt
+        );
 
         // Add AI response
         const newAiMessage: Message = {
@@ -204,6 +211,8 @@ export default function Chat() {
         title={taskTitle ? `${taskTitle} Assistant` : 'Chat'}
         messagesLeft={messageLimitState.messagesLeft}
         maxMessages={messageLimitState.maxMessages}
+        showModelSelector={true}
+        onUpgradePress={handleUpgradeToPremium}
       />
 
       <KeyboardAvoidingView

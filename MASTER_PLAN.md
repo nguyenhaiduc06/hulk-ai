@@ -171,6 +171,41 @@ hulk-ai/
     - Direct navigation from chat CTA
     - Proper back navigation handling
 
+### 10. AI Model Selection
+
+- **Status**: ✅ Complete
+- **Description**: Dynamic AI model selection system with premium model access and custom system prompts
+- **Features**:
+  - **Model Selection Button**: Replaces screen title in chat header
+    - Shows currently selected model name
+    - Settings icon with dropdown indicator
+    - Tappable to open model selection modal
+  - **Model Selection Modal**: Comprehensive model browser
+    - 4 available models: GPT-4o Mini, GPT-4o, GPT-3.5 Turbo, GPT-4 Turbo
+    - Model-specific system prompts displayed as descriptions
+    - Premium model indicators and access control
+    - Visual selection states with checkmarks
+    - Premium upgrade CTA for non-premium users
+  - **Model Access Control**: Premium model restrictions
+    - Free users: GPT-4o Mini, GPT-3.5 Turbo
+    - Premium users: All models including GPT-4o and GPT-4 Turbo
+    - Locked model overlays with "Premium Required" indicators
+  - **Dynamic Model Integration**: Real-time model switching with custom prompts
+    - Selected model and system prompt passed to OpenAI API calls
+    - Persistent model selection using AsyncStorage
+    - Default model: GPT-4o Mini with friendly system prompt
+    - Model selection affects all chat interactions with personality changes
+  - **Enhanced OpenAI Integration**: Updated utility functions
+    - `generateResponse()` accepts model and systemPrompt parameters
+    - `generateSimpleResponse()` accepts model and systemPrompt parameters
+    - Backward compatibility with default model and prompt fallback
+    - Error handling for model-specific issues
+  - **Model-Specific Personalities**: Each model has unique system prompt (all using GPT-4.1-nano)
+    - GPT-4o Mini: Fast, concise, practical responses with friendly personality
+    - GPT-4o: Most advanced with deep knowledge, complex reasoning, and comprehensive responses
+    - GPT-3.5 Turbo: Reliable, efficient, balanced responses with dependable guidance
+    - GPT-4 Turbo: Enhanced capabilities with sophisticated reasoning and detailed analysis
+
 ## 🚧 In Progress Features
 
 ### 1. Supabase Integration
@@ -551,6 +586,13 @@ hulk-ai/
   - Bottom sheet modal for message limit information
   - Premium CTAs in chat when limit reached
   - Seamless navigation between CTAs and paywall screen
+
+- ✅ **AI Model Selection**: Dynamic AI model selection system with premium access control
+  - Model selection button in chat header replacing screen title
+  - Comprehensive model selection modal with 4 available models
+  - Premium model restrictions and upgrade CTAs
+  - Real-time model switching with persistent storage
+  - Enhanced OpenAI integration supporting dynamic model selection
 
 ---
 
