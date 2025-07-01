@@ -46,7 +46,7 @@ export default function Home() {
         {/* Header */}
         <View className="px-6 pb-8 pt-6">
           <Text className="font-clash-semibold text-text-primary text-2xl leading-tight">
-            Hello! ��
+            Hello! 👋
           </Text>
           <Text className="font-inter text-text-tertiary text-lg">How can I help you today?</Text>
         </View>
