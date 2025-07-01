@@ -13,7 +13,9 @@ interface CustomHeaderProps {
   maxMessages: number;
   showBackButton?: boolean;
   showModelSelector?: boolean;
+  showSettingsButton?: boolean;
   onUpgradePress?: () => void;
+  onSettingsPress?: () => void;
 }
 
 export function CustomHeader({
@@ -22,7 +24,9 @@ export function CustomHeader({
   maxMessages,
   showBackButton = true,
   showModelSelector = false,
+  showSettingsButton = false,
   onUpgradePress,
+  onSettingsPress,
 }: CustomHeaderProps) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
@@ -89,7 +93,7 @@ export function CustomHeader({
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <Ionicons name="settings-outline" size={20} color="#374151" />
               <Text
-                className="font-clash-medium text-text-primary ml-2 flex-1 text-lg"
+                className="ml-2 flex-1 font-clash-medium text-lg text-text-primary"
                 numberOfLines={1}>
                 {getSelectedModelName()}
               </Text>
@@ -97,31 +101,43 @@ export function CustomHeader({
             </TouchableOpacity>
           ) : (
             <Text
-              className="font-clash-semibold text-text-primary flex-1 text-2xl"
+              className="flex-1 font-clash-semibold text-2xl text-text-primary"
               numberOfLines={1}>
               {title}
             </Text>
           )}
         </View>
 
-        {/* Messages Left Indicator */}
-        <TouchableOpacity
-          onPress={handleMessageIndicatorPress}
-          className={`flex-row items-center rounded-2xl border-2 px-4 py-2 ${
-            isPremium ? 'border-primary bg-primary' : 'border-gray-200 bg-gray-100'
-          }`}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Ionicons
-            name={getMessageIcon() as any}
-            size={18}
-            color={isPremium ? 'white' : getMessageColor()}
-          />
-          <Text
-            className="font-clash-medium ml-2 text-base"
-            style={{ color: isPremium ? 'white' : getMessageColor() }}>
-            {getMessageText()}
-          </Text>
-        </TouchableOpacity>
+        <View className="flex-row items-center gap-2">
+          {/* Messages Left Indicator */}
+          <TouchableOpacity
+            onPress={handleMessageIndicatorPress}
+            className={`flex-row items-center rounded-2xl border-2 px-4 py-2 ${
+              isPremium ? 'border-primary bg-primary' : 'border-gray-200 bg-gray-100'
+            }`}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Ionicons
+              name={getMessageIcon() as any}
+              size={18}
+              color={isPremium ? 'white' : getMessageColor()}
+            />
+            <Text
+              className="ml-2 font-clash-medium text-base"
+              style={{ color: isPremium ? 'white' : getMessageColor() }}>
+              {getMessageText()}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Settings Button */}
+          {showSettingsButton && (
+            <TouchableOpacity
+              onPress={onSettingsPress}
+              className="rounded-2xl bg-gray-100 p-2"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <Ionicons name="settings-outline" size={20} color="#374151" />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Message Limit Modal */}

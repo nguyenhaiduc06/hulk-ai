@@ -1,6 +1,6 @@
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
 
 import { ChatInputButton } from '~/components/ChatInputButton';
@@ -11,6 +11,7 @@ import { suggestionCards, recentChats } from '~/utils/mockData';
 import { getMessageLimitState, DAILY_MESSAGE_LIMIT } from '~/utils/messageLimit';
 
 export default function Home() {
+  const router = useRouter();
   const [messageLimitState, setMessageLimitState] = useState({
     messagesLeft: DAILY_MESSAGE_LIMIT,
     maxMessages: DAILY_MESSAGE_LIMIT,
@@ -40,15 +41,19 @@ export default function Home() {
         messagesLeft={messageLimitState.messagesLeft}
         maxMessages={messageLimitState.maxMessages}
         showBackButton={false}
+        showSettingsButton={true}
+        onSettingsPress={() => {
+          router.push('/settings');
+        }}
       />
 
-      <ScrollView className="bg-surface flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 bg-surface" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="px-6 pb-8 pt-6">
-          <Text className="font-clash-semibold text-text-primary text-2xl leading-tight">
-            Hello! 👋
+          <Text className="font-clash-semibold text-2xl leading-tight text-text-primary">
+            Welcome to Hulk AI! 👋
           </Text>
-          <Text className="font-inter text-text-tertiary text-lg">How can I help you today?</Text>
+          <Text className="font-inter text-lg text-text-tertiary">How can I help you today?</Text>
         </View>
 
         {/* Chat Section */}
@@ -59,10 +64,10 @@ export default function Home() {
         {/* Suggestions Section */}
         <View className="mb-8">
           <View className="mb-4 px-6">
-            <Text className="font-clash-semibold text-text-primary text-2xl leading-tight">
+            <Text className="font-clash-semibold text-2xl leading-tight text-text-primary">
               Suggestions
             </Text>
-            <Text className="font-inter text-text-tertiary text-base">
+            <Text className="font-inter text-base text-text-tertiary">
               Popular ways to get started
             </Text>
           </View>
@@ -80,10 +85,10 @@ export default function Home() {
         {/* Recent Chats Section */}
         <View className="mb-8">
           <View className="mb-4 px-6">
-            <Text className="font-clash-semibold text-text-primary text-2xl leading-tight">
+            <Text className="font-clash-semibold text-2xl leading-tight text-text-primary">
               Recent Chats
             </Text>
-            <Text className="font-inter text-text-tertiary text-base">
+            <Text className="font-inter text-base text-text-tertiary">
               Continue where you left off
             </Text>
           </View>

@@ -230,6 +230,13 @@ hulk-ai/
 
 ### Phase 1: Core Enhancement (Next 2-4 weeks)
 
+- ✅ **Settings Screen**
+  - Account and subscription management
+  - AI model preferences and selection
+  - App preferences and customization
+  - Privacy and security settings
+  - Support and about information
+
 - [ ] **User Authentication**
   - Email/password signup/login
   - Social authentication (Google, Apple)
@@ -580,6 +587,7 @@ hulk-ai/
   - Safe area support with pt-safe class
   - Interactive message counter with bottom sheet modal
   - Dynamic titles and back button logic
+  - Settings button integration for easy access
 
 - ✅ **Paywall & Premium Features**: Complete premium subscription system
   - Modern paywall screen with feature showcase and pricing plans
@@ -593,6 +601,13 @@ hulk-ai/
   - Premium model restrictions and upgrade CTAs
   - Real-time model switching with persistent storage
   - Enhanced OpenAI integration supporting dynamic model selection
+
+- ✅ **Settings Screen**: Comprehensive settings and preferences management
+  - Account and subscription management
+  - AI model preferences and selection
+  - App preferences and customization
+  - Privacy and security settings
+  - Support and about information
 
 ---
 

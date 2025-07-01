@@ -44,6 +44,7 @@ export default function Layout() {
           <Stack.Screen name="details" options={{ title: 'Details' }} />
           <Stack.Screen name="chat" options={{ title: 'Chat', headerShown: false }} />
           <Stack.Screen name="paywall" options={{ title: 'Premium', headerShown: false }} />
+          <Stack.Screen name="settings" options={{ title: 'Settings', headerShown: false }} />
         </Stack>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
