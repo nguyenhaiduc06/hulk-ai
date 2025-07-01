@@ -148,15 +148,15 @@ hulk-ai/
 
 ### 9. Paywall & Premium Features
 
-- **Status**: ✅ Complete
+- **Status**: ✅ Complete (Paywall UI present, plans coming soon)
 - **Description**: Premium subscription system with paywall screen and upgrade CTAs
 - **Features**:
   - **Paywall Screen**: Modern, feature-rich subscription screen
     - Premium features showcase with icons and descriptions
-    - Monthly ($9.99) and yearly ($99.99) subscription plans
     - User testimonials and social proof
-    - Free trial promotion (7-day trial)
+    - Free trial promotion (coming soon)
     - Professional gradient design with premium branding
+    - **Plan selection coming soon**: Subscription options will be available in future updates
   - **Bottom Sheet Modal**: Interactive message limit information
     - Shows when tapping message indicator in header
     - Explains free plan benefits (5 messages/day, basic AI, standard response times)

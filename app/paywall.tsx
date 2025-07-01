@@ -153,55 +153,15 @@ export default function Paywall() {
               Choose Your Plan
             </Text>
 
-            {/* Monthly Plan */}
-            <TouchableOpacity
-              onPress={() => handleSubscribe('monthly')}
-              disabled={isProcessing}
-              className={`mb-4 rounded-3xl border-2 border-primary bg-white p-6 shadow-lg ${
-                isProcessing ? 'opacity-50' : ''
-              }`}>
-              <View className="mb-4 flex-row items-center justify-between">
-                <View>
-                  <Text className="font-clash-semibold text-lg text-text-primary">Monthly</Text>
-                  <Text className="font-inter text-sm text-text-secondary">
-                    Perfect for trying out
-                  </Text>
-                </View>
-                <View className="items-end">
-                  <Text className="font-clash-bold text-2xl text-primary">$9.99</Text>
-                  <Text className="font-inter text-sm text-text-secondary">per month</Text>
-                </View>
-              </View>
-              <View className="rounded-2xl bg-primary p-3">
-                <Text className="text-center font-clash-medium text-white">
-                  {isProcessing ? 'Processing...' : 'Start Free Trial'}
-                </Text>
-              </View>
-            </TouchableOpacity>
-
-            {/* Yearly Plan */}
-            <TouchableOpacity
-              onPress={() => handleSubscribe('yearly')}
-              disabled={isProcessing}
-              className={`rounded-3xl bg-primary p-6 shadow-lg ${
-                isProcessing ? 'opacity-50' : ''
-              }`}>
-              <View className="mb-4 flex-row items-center justify-between">
-                <View>
-                  <Text className="font-clash-semibold text-lg text-white">Yearly</Text>
-                  <Text className="font-inter text-sm text-white/80">Best value - Save 17%</Text>
-                </View>
-                <View className="items-end">
-                  <Text className="font-clash-bold text-2xl text-white">$99.99</Text>
-                  <Text className="font-inter text-sm text-white/80">per year</Text>
-                </View>
-              </View>
-              <View className="rounded-2xl bg-white/20 p-3">
-                <Text className="text-center font-clash-medium text-black/40">
-                  {isProcessing ? 'Processing...' : 'Most Popular'}
-                </Text>
-              </View>
-            </TouchableOpacity>
+            <View className="items-center rounded-3xl bg-white p-6 shadow-lg">
+              <Text className="mb-2 font-clash-medium text-lg text-text-primary">
+                Premium plans are coming soon!
+              </Text>
+              <Text className="text-center font-inter text-base text-text-secondary">
+                We will add subscription options in our next updates. Stay tuned for more features
+                and ways to unlock unlimited access.
+              </Text>
+            </View>
           </View>
 
           {/* Bottom spacing */}
