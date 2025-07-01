@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert, Linking, Switch } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Stack, useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, Linking, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { CustomHeader } from '~/components/CustomHeader';
-import { useSubscriptionStore, useAIModelStore } from '~/store/store';
-import { getMessageLimitState, DAILY_MESSAGE_LIMIT } from '~/utils/messageLimit';
+import { ModelSelectionModal } from '~/components/ModelSelectionModal';
+import { useAIModelStore, useSubscriptionStore } from '~/store/store';
+import { DAILY_MESSAGE_LIMIT, getMessageLimitState } from '~/utils/messageLimit';
 
 interface SettingsItemProps {
   icon: string;
@@ -72,9 +72,10 @@ export default function Settings() {
   });
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [hapticFeedbackEnabled, setHapticFeedbackEnabled] = useState(true);
+  const [showModelModal, setShowModelModal] = useState(false);
 
   const isPremium = useSubscriptionStore((state) => state.isPremium);
-  const { selectedModel, getCurrentModel } = useAIModelStore();
+  const { selectedModel, setSelectedModel, getCurrentModel } = useAIModelStore();
   const currentModel = getCurrentModel();
 
   React.useEffect(() => {
@@ -98,16 +99,24 @@ export default function Settings() {
   };
 
   const handleModelSelectionPress = () => {
-    // TODO: Open model selection modal or navigate to model settings
-    Alert.alert('Model Selection', 'Model selection feature coming soon!');
+    setShowModelModal(true);
+  };
+
+  const handleModelSelect = (modelId: string) => {
+    setSelectedModel(modelId);
+    setShowModelModal(false);
   };
 
   const handlePrivacyPolicyPress = () => {
-    Linking.openURL('https://example.com/privacy');
+    Linking.openURL(
+      'https://haiduc.notion.site/Privacy-Policy-Hulk-AI-22371f945420801f8083f8693e937bea'
+    );
   };
 
   const handleTermsPress = () => {
-    Linking.openURL('https://example.com/terms');
+    Linking.openURL(
+      'https://haiduc.notion.site/Terms-of-Service-Hulk-AI-22371f94542080f2a829c3a1acbff643'
+    );
   };
 
   const handleSupportPress = () => {
@@ -190,32 +199,34 @@ export default function Settings() {
             </View>
           </View>
 
-          {/* App Preferences Section */}
-          <View className="mb-8">
-            <Text className="mb-2 font-clash-semibold text-xl text-text-primary">
-              App Preferences
-            </Text>
-            <View className="gap-3">
-              <SettingsItem
-                icon="notifications-outline"
-                title="Notifications"
-                subtitle="Get notified about new features and updates"
-                onPress={() => {}}
-                showSwitch={true}
-                switchValue={notificationsEnabled}
-                onSwitchChange={setNotificationsEnabled}
-              />
-              <SettingsItem
-                icon="phone-portrait-outline"
-                title="Haptic Feedback"
-                subtitle="Vibrate on interactions"
-                onPress={() => {}}
-                showSwitch={true}
-                switchValue={hapticFeedbackEnabled}
-                onSwitchChange={setHapticFeedbackEnabled}
-              />
+          {/* App Preferences Section (temporarily disabled) */}
+          {false && (
+            <View className="mb-8">
+              <Text className="mb-2 font-clash-semibold text-xl text-text-primary">
+                App Preferences
+              </Text>
+              <View className="gap-3">
+                <SettingsItem
+                  icon="notifications-outline"
+                  title="Notifications"
+                  subtitle="Get notified about new features and updates"
+                  onPress={() => {}}
+                  showSwitch={true}
+                  switchValue={notificationsEnabled}
+                  onSwitchChange={setNotificationsEnabled}
+                />
+                <SettingsItem
+                  icon="phone-portrait-outline"
+                  title="Haptic Feedback"
+                  subtitle="Vibrate on interactions"
+                  onPress={() => {}}
+                  showSwitch={true}
+                  switchValue={hapticFeedbackEnabled}
+                  onSwitchChange={setHapticFeedbackEnabled}
+                />
+              </View>
             </View>
-          </View>
+          )}
 
           {/* Privacy & Legal Section */}
           <View className="mb-8">
@@ -276,6 +287,16 @@ export default function Settings() {
           <View className="h-8" />
         </ScrollView>
       </View>
+
+      {/* Model Selection Modal */}
+      <ModelSelectionModal
+        visible={showModelModal}
+        onClose={() => setShowModelModal(false)}
+        selectedModel={selectedModel}
+        onModelSelect={handleModelSelect}
+        isPremium={isPremium}
+        onUpgradePress={handleSubscriptionPress}
+      />
     </>
   );
 }
