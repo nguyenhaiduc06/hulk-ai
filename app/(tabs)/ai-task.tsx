@@ -196,11 +196,11 @@ export default function AITask() {
       <View className="items-start">
         <Text className="mb-4 text-5xl leading-normal">{item.emoji}</Text>
         <Text
-          className="font-clash-medium text-text-primary text-lg leading-tight"
+          className="font-clash-medium text-lg leading-tight text-text-primary"
           numberOfLines={2}>
           {item.title}
         </Text>
-        <Text className="font-inter text-text-secondary text-sm" numberOfLines={3}>
+        <Text className="font-inter text-sm text-text-secondary" numberOfLines={3}>
           {item.description}
         </Text>
       </View>
@@ -211,7 +211,7 @@ export default function AITask() {
     <TouchableOpacity
       onPress={() => setSelectedCategory(item.id)}
       className={`mr-4 rounded-2xl border-2 px-6 py-3 ${
-        selectedCategory === item.id ? 'bg-primary border-primary' : 'border-gray-200 bg-white'
+        selectedCategory === item.id ? 'border-primary bg-primary' : 'border-gray-200 bg-white'
       }`}>
       <Text
         className={`font-clash-semibold text-base ${
@@ -236,9 +236,10 @@ export default function AITask() {
         messagesLeft={messageLimitState.messagesLeft}
         maxMessages={messageLimitState.maxMessages}
         showBackButton={false}
+        showSettingsButton={true}
       />
 
-      <View className="bg-surface flex-1">
+      <View className="flex-1 bg-surface">
         <View className="flex-1">
           {/* Category Filter */}
           <View className="mb-8">

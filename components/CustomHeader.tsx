@@ -110,7 +110,7 @@ export function CustomHeader({
 
         <View className="flex-row items-center gap-2">
           {/* Messages Left Indicator */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={handleMessageIndicatorPress}
             className="h-10 flex-row items-center rounded-2xl bg-gray-100 px-4"
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
@@ -118,7 +118,7 @@ export function CustomHeader({
             <Text className="ml-2 font-clash-medium text-base" style={{ color: getMessageColor() }}>
               {getMessageText()}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* Settings Button */}
           {showSettingsButton && (

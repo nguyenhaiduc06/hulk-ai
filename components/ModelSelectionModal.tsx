@@ -24,6 +24,7 @@ export function ModelSelectionModal({
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const snapPoints = useMemo(() => ['75%'], []);
   const { models } = useAIModelStore();
+  console.log(models);
 
   useEffect(() => {
     if (visible) {
@@ -125,9 +126,7 @@ export function ModelSelectionModal({
                             className={`font-inter text-sm ${
                               isDisabled ? 'text-gray-400' : 'text-text-secondary'
                             }`}>
-                            {model.systemPrompt.length > 80
-                              ? `${model.systemPrompt.substring(0, 80)}...`
-                              : model.systemPrompt}
+                            {model.description}
                           </Text>
                         </View>
                       </View>
@@ -150,7 +149,7 @@ export function ModelSelectionModal({
           </View>
 
           {/* Premium Upgrade CTA */}
-          {!isPremium && (
+          {/* {!isPremium && (
             <View className="mt-8 rounded-3xl border-2 border-primary bg-primary/5 p-6">
               <View className="mb-3 flex-row items-center">
                 <View className="mr-3 h-10 w-10 items-center justify-center rounded-2xl bg-primary">
@@ -170,7 +169,7 @@ export function ModelSelectionModal({
                 <Text className="font-clash-medium text-base text-white">Upgrade to Premium</Text>
               </TouchableOpacity>
             </View>
-          )}
+          )} */}
         </BottomSheetScrollView>
       </View>
     </BottomSheetModal>

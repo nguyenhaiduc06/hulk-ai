@@ -120,7 +120,9 @@ export default function Settings() {
   };
 
   const handleSupportPress = () => {
-    Linking.openURL('mailto:support@hulkai.com');
+    Linking.openURL(
+      'https://haiduc.notion.site/Hulk-AI-Support-Center-22471f94542080c6ae99cd9c4c17e678'
+    );
   };
 
   const handleRateAppPress = () => {
@@ -170,63 +172,61 @@ export default function Settings() {
           <View className="mb-8">
             <Text className="mb-2 font-clash-semibold text-xl text-text-primary">Account</Text>
             <View className="gap-3">
-              <SettingsItem
+              {/* <SettingsItem
                 icon="person-circle-outline"
                 title="Subscription"
                 subtitle={isPremium ? 'Premium Active' : 'Free Plan'}
                 onPress={handleSubscriptionPress}
                 isPremium={isPremium}
-              />
+              /> */}
               <SettingsItem
                 icon="chatbubble-ellipses-outline"
                 title="AI Model"
                 subtitle={`Current: ${currentModel?.name || 'GPT-4o Mini'}`}
                 onPress={handleModelSelectionPress}
               />
-              <SettingsItem
+              {/* <SettingsItem
                 icon="download-outline"
                 title="Export Data"
                 subtitle="Download your conversations and data"
                 onPress={handleExportDataPress}
-              />
+              /> */}
               <SettingsItem
                 icon="trash-outline"
-                title="Delete Account"
-                subtitle="Permanently delete your account"
+                title="Delete Chat History"
+                subtitle="Permanently delete your chat history"
                 onPress={handleDeleteAccountPress}
                 showArrow={false}
               />
             </View>
           </View>
 
-          {/* App Preferences Section (temporarily disabled) */}
-          {false && (
-            <View className="mb-8">
-              <Text className="mb-2 font-clash-semibold text-xl text-text-primary">
-                App Preferences
-              </Text>
-              <View className="gap-3">
-                <SettingsItem
-                  icon="notifications-outline"
-                  title="Notifications"
-                  subtitle="Get notified about new features and updates"
-                  onPress={() => {}}
-                  showSwitch={true}
-                  switchValue={notificationsEnabled}
-                  onSwitchChange={setNotificationsEnabled}
-                />
-                <SettingsItem
-                  icon="phone-portrait-outline"
-                  title="Haptic Feedback"
-                  subtitle="Vibrate on interactions"
-                  onPress={() => {}}
-                  showSwitch={true}
-                  switchValue={hapticFeedbackEnabled}
-                  onSwitchChange={setHapticFeedbackEnabled}
-                />
-              </View>
+          {/* App Preferences Section */}
+          {/* <View className="mb-8">
+            <Text className="mb-2 font-clash-semibold text-xl text-text-primary">
+              App Preferences
+            </Text>
+            <View className="gap-3">
+              <SettingsItem
+                icon="notifications-outline"
+                title="Notifications"
+                subtitle="Get notified about new features and updates"
+                onPress={() => {}}
+                showSwitch={true}
+                switchValue={notificationsEnabled}
+                onSwitchChange={setNotificationsEnabled}
+              />
+              <SettingsItem
+                icon="phone-portrait-outline"
+                title="Haptic Feedback"
+                subtitle="Vibrate on interactions"
+                onPress={() => {}}
+                showSwitch={true}
+                switchValue={hapticFeedbackEnabled}
+                onSwitchChange={setHapticFeedbackEnabled}
+              />
             </View>
-          )}
+          </View> */}
 
           {/* Privacy & Legal Section */}
           <View className="mb-8">
@@ -261,7 +261,7 @@ export default function Settings() {
                 subtitle="Get help and contact support"
                 onPress={handleSupportPress}
               />
-              <SettingsItem
+              {/* <SettingsItem
                 icon="star-outline"
                 title="Rate App"
                 subtitle="Rate us on the App Store"
@@ -272,7 +272,7 @@ export default function Settings() {
                 title="Share App"
                 subtitle="Share with friends and family"
                 onPress={handleShareAppPress}
-              />
+              /> */}
               <SettingsItem
                 icon="information-circle-outline"
                 title="About"
