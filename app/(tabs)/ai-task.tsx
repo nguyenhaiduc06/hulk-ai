@@ -237,6 +237,9 @@ export default function AITask() {
         maxMessages={messageLimitState.maxMessages}
         showBackButton={false}
         showSettingsButton={true}
+        onSettingsPress={() => {
+          router.push('/settings');
+        }}
       />
 
       <View className="flex-1 bg-surface">

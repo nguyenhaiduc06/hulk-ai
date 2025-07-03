@@ -29,7 +29,7 @@ import {
   DAILY_MESSAGE_LIMIT,
   MessageLimitState,
 } from '~/utils/messageLimit';
-import { useSubscriptionStore, useAIModelStore } from '~/store/store';
+import { useSubscriptionStore, useAIModelStore, useChatHistoryStore } from '~/store/store';
 
 type Message = {
   id: string;
@@ -39,12 +39,13 @@ type Message = {
 };
 
 export default function Chat() {
-  const { initialPrompt, taskTitle } = useLocalSearchParams();
+  const { initialPrompt, taskTitle, sessionId } = useLocalSearchParams();
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [messageLimitState, setMessageLimitState] = useState<MessageLimitState>({
     messagesLeft: DAILY_MESSAGE_LIMIT,
     maxMessages: DAILY_MESSAGE_LIMIT,
@@ -53,6 +54,7 @@ export default function Chat() {
   const scrollViewRef = useRef<ScrollView>(null);
   const isPremium = useSubscriptionStore((state) => state.isPremium);
   const { selectedModel, getCurrentModel } = useAIModelStore();
+  const { createSession, addMessage, getSession, setCurrentSession } = useChatHistoryStore();
   const expandValue = useSharedValue(0);
 
   // Load message limit state on component mount
@@ -65,23 +67,71 @@ export default function Chat() {
     setMessageLimitState(state);
   };
 
-  // Initialize with welcome message and optional initial prompt
+  // Initialize session and messages
   useEffect(() => {
-    const welcomeMessage: Message = {
-      id: '1',
-      text: taskTitle
-        ? `Hello! I'm your AI assistant for ${taskTitle}. How can I help you today?`
-        : "Hello! I'm your AI assistant. How can I help you today?",
-      isUser: false,
-      timestamp: new Date(),
-    };
-    setMessages([welcomeMessage]);
+    const initializeSession = async () => {
+      const currentModel = getCurrentModel();
+      const modelId = currentModel?.id || selectedModel;
 
-    // If there's an initial prompt, prefill the input field
-    if (initialPrompt) {
-      setInputText(initialPrompt as string);
-    }
-  }, [initialPrompt, taskTitle]);
+      if (sessionId) {
+        // Load existing session
+        const session = getSession(sessionId as string);
+        if (session) {
+          setCurrentSessionId(sessionId as string);
+          setCurrentSession(sessionId as string);
+
+          // Convert stored messages to local format
+          const localMessages: Message[] = session.messages.map((msg) => ({
+            id: msg.id,
+            text: msg.content,
+            isUser: msg.role === 'user',
+            timestamp: new Date(msg.timestamp),
+          }));
+          setMessages(localMessages);
+        }
+      } else {
+        // Create new session
+        const newSessionId = createSession(modelId);
+        setCurrentSessionId(newSessionId);
+        setCurrentSession(newSessionId);
+
+        // Add welcome message
+        const welcomeMessage: Message = {
+          id: '1',
+          text: taskTitle
+            ? `Hello! I'm your AI assistant for ${taskTitle}. How can I help you today?`
+            : "Hello! I'm your AI assistant. How can I help you today?",
+          isUser: false,
+          timestamp: new Date(),
+        };
+        setMessages([welcomeMessage]);
+
+        // Store welcome message in session
+        addMessage(newSessionId, {
+          role: 'assistant',
+          content: welcomeMessage.text,
+          modelId,
+        });
+      }
+
+      // If there's an initial prompt, prefill the input field
+      if (initialPrompt) {
+        setInputText(initialPrompt as string);
+      }
+    };
+
+    initializeSession();
+  }, [
+    sessionId,
+    initialPrompt,
+    taskTitle,
+    createSession,
+    getSession,
+    setCurrentSession,
+    addMessage,
+    getCurrentModel,
+    selectedModel,
+  ]);
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -91,7 +141,7 @@ export default function Chat() {
   }, [messages]);
 
   const sendMessage = async () => {
-    if (inputText.trim() && !isLoading) {
+    if (inputText.trim() && !isLoading && currentSessionId) {
       // Check if user can send a message (skip for premium users)
       if (!isPremium) {
         const canSend = await canSendMessage();
@@ -115,7 +165,7 @@ export default function Chat() {
         setMessageLimitState(newLimitState);
       }
 
-      // Add user message
+      // Add user message to local state
       const newUserMessage: Message = {
         id: Date.now().toString(),
         text: userMessage,
@@ -123,6 +173,15 @@ export default function Chat() {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, newUserMessage]);
+
+      // Store user message in chat history
+      const currentModel = getCurrentModel();
+      const modelId = currentModel?.id || selectedModel;
+      addMessage(currentSessionId, {
+        role: 'user',
+        content: userMessage,
+        modelId,
+      });
 
       try {
         // Convert messages to OpenAI format for context
@@ -134,7 +193,6 @@ export default function Chat() {
           }));
 
         // Generate AI response
-        const currentModel = getCurrentModel();
         const aiResponse = await generateResponse(
           userMessage,
           conversationHistory,
@@ -142,7 +200,7 @@ export default function Chat() {
           currentModel?.systemPrompt
         );
 
-        // Add AI response
+        // Add AI response to local state
         const newAiMessage: Message = {
           id: (Date.now() + 1).toString(),
           text: aiResponse,
@@ -150,9 +208,16 @@ export default function Chat() {
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, newAiMessage]);
+
+        // Store AI response in chat history
+        addMessage(currentSessionId, {
+          role: 'assistant',
+          content: aiResponse,
+          modelId,
+        });
       } catch (error) {
         console.error('Error generating response:', error);
-        // Add error message
+        // Add error message to local state
         const errorMessage: Message = {
           id: (Date.now() + 1).toString(),
           text: "I'm sorry, I'm having trouble responding right now. Please try again.",
@@ -160,6 +225,13 @@ export default function Chat() {
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, errorMessage]);
+
+        // Store error message in chat history
+        addMessage(currentSessionId, {
+          role: 'assistant',
+          content: errorMessage.text,
+          modelId,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -234,7 +306,7 @@ export default function Chat() {
                   className={`mb-4 ${message.isUser ? 'items-end' : 'items-start'}`}>
                   <View
                     className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                      message.isUser ? 'bg-primary rounded-br-md' : 'rounded-bl-md bg-gray-200'
+                      message.isUser ? 'rounded-br-md bg-primary' : 'rounded-bl-md bg-gray-200'
                     }`}>
                     <Text
                       className={`text-base ${message.isUser ? 'text-white' : 'text-gray-800'}`}>
@@ -268,22 +340,22 @@ export default function Chat() {
               {/* Daily limit reached message with premium CTA */}
               {!isPremium && messageLimitState.messagesLeft === 0 && (
                 <View className="mb-4 items-center">
-                  <View className="border-primary max-w-[80%] rounded-3xl border-2 bg-white p-6 shadow-lg">
+                  <View className="max-w-[80%] rounded-3xl border-2 border-primary bg-white p-6 shadow-lg">
                     <View className="mb-4 flex-row items-center">
-                      <View className="bg-primary-light mr-4 h-10 w-10 items-center justify-center rounded-2xl">
+                      <View className="mr-4 h-10 w-10 items-center justify-center rounded-2xl bg-primary-light">
                         <Text className="text-lg text-white">💎</Text>
                       </View>
-                      <Text className="font-clash-semibold text-text-primary text-lg">
+                      <Text className="font-clash-semibold text-lg text-text-primary">
                         Upgrade to Premium
                       </Text>
                     </View>
-                    <Text className="font-inter text-text-secondary mb-6 text-base">
+                    <Text className="mb-6 font-inter text-base text-text-secondary">
                       You've reached your daily message limit. Upgrade to Premium for unlimited
                       messages, faster responses, and advanced AI models.
                     </Text>
                     <TouchableOpacity
                       onPress={handleUpgradeToPremium}
-                      className="bg-primary items-center rounded-2xl px-6 py-4">
+                      className="items-center rounded-2xl bg-primary px-6 py-4">
                       <Text className="font-clash-medium text-base text-white">Upgrade Now</Text>
                     </TouchableOpacity>
                   </View>
@@ -307,7 +379,7 @@ export default function Chat() {
                 <View className="mr-4 flex-1">
                   <Animated.View style={animatedInputStyle}>
                     <TextInput
-                      className="font-inter flex-1 rounded-2xl border-2 border-gray-200 px-5 py-4 text-base"
+                      className="flex-1 rounded-2xl border-2 border-gray-200 px-5 py-4 font-inter text-base"
                       placeholder={
                         isPremium
                           ? 'Type a message...'

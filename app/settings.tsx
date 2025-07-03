@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Alert, Linking, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { CustomHeader } from '~/components/CustomHeader';
 import { ModelSelectionModal } from '~/components/ModelSelectionModal';
-import { useAIModelStore, useSubscriptionStore } from '~/store/store';
+import { useAIModelStore, useSubscriptionStore, useChatHistoryStore } from '~/store/store';
 import { DAILY_MESSAGE_LIMIT, getMessageLimitState } from '~/utils/messageLimit';
 
 interface SettingsItemProps {
@@ -76,6 +76,7 @@ export default function Settings() {
 
   const isPremium = useSubscriptionStore((state) => state.isPremium);
   const { selectedModel, setSelectedModel, getCurrentModel } = useAIModelStore();
+  const { clearAllSessions } = useChatHistoryStore();
   const currentModel = getCurrentModel();
 
   React.useEffect(() => {
@@ -139,13 +140,20 @@ export default function Settings() {
     Alert.alert('Export Data', 'Data export feature coming soon!');
   };
 
-  const handleDeleteAccountPress = () => {
+  const handleClearChatHistory = () => {
     Alert.alert(
-      'Delete Account',
-      'Are you sure you want to delete your account? This action cannot be undone.',
+      'Clear Chat History',
+      'Are you sure you want to delete all your chat history? This action cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => console.log('Delete account') },
+        {
+          text: 'Clear All',
+          style: 'destructive',
+          onPress: () => {
+            clearAllSessions();
+            Alert.alert('Success', 'All chat history has been cleared.');
+          },
+        },
       ]
     );
   };
@@ -195,7 +203,7 @@ export default function Settings() {
                 icon="trash-outline"
                 title="Delete Chat History"
                 subtitle="Permanently delete your chat history"
-                onPress={handleDeleteAccountPress}
+                onPress={handleClearChatHistory}
                 showArrow={false}
               />
             </View>

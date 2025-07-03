@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
@@ -7,11 +7,13 @@ import { ChatInputButton } from '~/components/ChatInputButton';
 import { SuggestionCard } from '~/components/SuggestionCard';
 import { RecentChatCard } from '~/components/RecentChatCard';
 import { CustomHeader } from '~/components/CustomHeader';
-import { suggestionCards, recentChats } from '~/utils/mockData';
+import { suggestionCards } from '~/utils/mockData';
 import { getMessageLimitState, DAILY_MESSAGE_LIMIT } from '~/utils/messageLimit';
+import { useChatHistoryStore } from '~/store/store';
 
 export default function Home() {
   const router = useRouter();
+  const { sessions } = useChatHistoryStore();
   const [messageLimitState, setMessageLimitState] = useState({
     messagesLeft: DAILY_MESSAGE_LIMIT,
     maxMessages: DAILY_MESSAGE_LIMIT,
@@ -26,6 +28,9 @@ export default function Home() {
     };
     loadMessageLimitState();
   }, []);
+
+  // Get recent sessions (last 5)
+  const recentSessions = sessions.slice(0, 5);
 
   return (
     <>
@@ -92,15 +97,37 @@ export default function Home() {
               Continue where you left off
             </Text>
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24 }}
-            className="flex-row">
-            {recentChats.map((chat) => (
-              <RecentChatCard key={chat.id} chat={chat} />
-            ))}
-          </ScrollView>
+
+          {recentSessions.length > 0 ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 24 }}
+              className="flex-row">
+              {recentSessions.map((session) => (
+                <RecentChatCard key={session.id} session={session} />
+              ))}
+            </ScrollView>
+          ) : (
+            <View className="mx-6 rounded-3xl border-2 border-dashed border-gray-200 bg-gray-50 p-8">
+              <View className="items-center">
+                <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-gray-200">
+                  <Text className="text-2xl">💬</Text>
+                </View>
+                <Text className="mb-2 font-clash-semibold text-lg text-text-primary">
+                  No conversations yet
+                </Text>
+                <Text className="mb-6 text-center font-inter text-sm text-text-tertiary">
+                  Start your first conversation with Hulk AI to see your chat history here
+                </Text>
+                <TouchableOpacity
+                  onPress={() => router.push('/chat')}
+                  className="items-center rounded-2xl bg-primary px-6 py-3">
+                  <Text className="font-clash-medium text-base text-white">Start Chatting</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
         </View>
 
         {/* Bottom spacing */}

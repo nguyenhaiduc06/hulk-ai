@@ -192,3 +192,135 @@ export const useAIModelStore = create<AIModelState>((set, get) => ({
     return state.models.find((model) => model.id === state.selectedModel);
   },
 }));
+
+// Chat History Types
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+  modelId: string;
+}
+
+export interface ChatSession {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  createdAt: number;
+  updatedAt: number;
+  modelId: string;
+}
+
+interface ChatHistoryState {
+  sessions: ChatSession[];
+  currentSessionId: string | null;
+  // Actions
+  createSession: (modelId: string) => string;
+  deleteSession: (sessionId: string) => void;
+  updateSessionTitle: (sessionId: string, title: string) => void;
+  addMessage: (sessionId: string, message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
+  setCurrentSession: (sessionId: string | null) => void;
+  getCurrentSession: () => ChatSession | undefined;
+  getSession: (sessionId: string) => ChatSession | undefined;
+  clearAllSessions: () => void;
+}
+
+export const useChatHistoryStore = create<ChatHistoryState>()(
+  persist(
+    (set, get) => ({
+      sessions: [],
+      currentSessionId: null,
+
+      createSession: (modelId: string) => {
+        const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const newSession: ChatSession = {
+          id: sessionId,
+          title: 'New Chat',
+          messages: [],
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          modelId,
+        };
+
+        set((state) => ({
+          sessions: [newSession, ...state.sessions],
+          currentSessionId: sessionId,
+        }));
+
+        return sessionId;
+      },
+
+      deleteSession: (sessionId: string) => {
+        set((state) => {
+          const newSessions = state.sessions.filter((session) => session.id !== sessionId);
+          const newCurrentSessionId =
+            state.currentSessionId === sessionId
+              ? newSessions.length > 0
+                ? newSessions[0].id
+                : null
+              : state.currentSessionId;
+
+          return {
+            sessions: newSessions,
+            currentSessionId: newCurrentSessionId,
+          };
+        });
+      },
+
+      updateSessionTitle: (sessionId: string, title: string) => {
+        set((state) => ({
+          sessions: state.sessions.map((session) =>
+            session.id === sessionId ? { ...session, title, updatedAt: Date.now() } : session
+          ),
+        }));
+      },
+
+      addMessage: (sessionId: string, message: Omit<ChatMessage, 'id' | 'timestamp'>) => {
+        const newMessage: ChatMessage = {
+          ...message,
+          id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          timestamp: Date.now(),
+        };
+
+        set((state) => ({
+          sessions: state.sessions.map((session) =>
+            session.id === sessionId
+              ? {
+                  ...session,
+                  messages: [...session.messages, newMessage],
+                  updatedAt: Date.now(),
+                  // Auto-generate title from first user message if it's still "New Chat"
+                  title:
+                    session.title === 'New Chat' && message.role === 'user'
+                      ? message.content.slice(0, 50) + (message.content.length > 50 ? '...' : '')
+                      : session.title,
+                }
+              : session
+          ),
+        }));
+      },
+
+      setCurrentSession: (sessionId: string | null) => {
+        set({ currentSessionId: sessionId });
+      },
+
+      getCurrentSession: () => {
+        const state = get();
+        return state.sessions.find((session) => session.id === state.currentSessionId);
+      },
+
+      getSession: (sessionId: string) => {
+        const state = get();
+        return state.sessions.find((session) => session.id === sessionId);
+      },
+
+      clearAllSessions: () => {
+        set({ sessions: [], currentSessionId: null });
+      },
+    }),
+    {
+      name: 'chat-history-storage',
+      storage: createJSONStorage(() => AsyncStorage),
+    }
+  )
+);
