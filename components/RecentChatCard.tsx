@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { ChatSession, useChatHistoryStore } from '~/store/store';
 
 interface RecentChatCardProps {
@@ -19,7 +20,7 @@ export function RecentChatCard({ session }: RecentChatCardProps) {
     });
   };
 
-  const handleLongPress = () => {
+  const handleDeletePress = () => {
     Alert.alert(
       'Delete Chat',
       `Are you sure you want to delete "${session.title}"? This action cannot be undone.`,
@@ -57,28 +58,34 @@ export function RecentChatCard({ session }: RecentChatCardProps) {
   };
 
   return (
-    <TouchableOpacity
-      onPress={handlePress}
-      onLongPress={handleLongPress}
-      className="mr-6 w-80 rounded-3xl border-2 border-gray-100 bg-white p-6 shadow-lg">
+    <View className="mr-6 w-80 rounded-3xl border-2 border-gray-100 bg-white p-6 shadow-lg">
       <View className="mb-3 flex-row items-start justify-between">
         <Text
           className="flex-1 font-clash-medium text-lg leading-tight text-text-primary"
           numberOfLines={2}>
           {session.title}
         </Text>
-        <View className="rounded-2xl bg-gray-100 px-3 py-1">
-          <Text className="font-clash-medium text-xs text-gray-700">
-            {session.messages.length} msg{session.messages.length !== 1 ? 's' : ''}
-          </Text>
+        <View className="flex-row items-center">
+          <View className="mr-3 h-8 items-center justify-center rounded-2xl bg-gray-100 px-3">
+            <Text className="font-clash-medium text-xs text-gray-700">
+              {session.messages.length} msg{session.messages.length !== 1 ? 's' : ''}
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={handleDeletePress}
+            className="h-8 w-8 items-center justify-center rounded-full bg-red-50">
+            <Ionicons name="trash-outline" size={16} color="#ef4444" />
+          </TouchableOpacity>
         </View>
       </View>
-      <Text className="mb-4 font-inter text-sm text-text-secondary" numberOfLines={2}>
-        {getLastMessagePreview()}
-      </Text>
-      <Text className="font-inter text-xs text-text-tertiary">
-        {formatTimestamp(session.updatedAt)}
-      </Text>
-    </TouchableOpacity>
+      <TouchableOpacity onPress={handlePress}>
+        <Text className="mb-4 font-inter text-sm text-text-secondary" numberOfLines={2}>
+          {getLastMessagePreview()}
+        </Text>
+        <Text className="font-inter text-xs text-text-tertiary">
+          {formatTimestamp(session.updatedAt)}
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 }
