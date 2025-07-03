@@ -21,15 +21,16 @@ type Category = {
   id: string;
   name: string;
   color: string;
+  icon: string;
 };
 
 const categories: Category[] = [
-  { id: 'all', name: 'All', color: '#6366f1' },
-  { id: 'work', name: 'Work', color: '#ef4444' },
-  { id: 'personal', name: 'Personal', color: '#10b981' },
-  { id: 'health', name: 'Health', color: '#f59e0b' },
-  { id: 'learning', name: 'Learning', color: '#8b5cf6' },
-  { id: 'finance', name: 'Finance', color: '#06b6d4' },
+  { id: 'all', name: 'All', color: '#6366f1', icon: '🌟' },
+  { id: 'work', name: 'Work', color: '#ef4444', icon: '💼' },
+  { id: 'personal', name: 'Personal', color: '#10b981', icon: '👤' },
+  { id: 'health', name: 'Health', color: '#f59e0b', icon: '🏥' },
+  { id: 'learning', name: 'Learning', color: '#8b5cf6', icon: '📚' },
+  { id: 'finance', name: 'Finance', color: '#06b6d4', icon: '💰' },
 ];
 
 const taskItems: TaskItem[] = [
@@ -213,12 +214,15 @@ export default function AITask() {
       className={`mr-4 rounded-2xl border-2 px-6 py-3 ${
         selectedCategory === item.id ? 'border-primary bg-primary' : 'border-gray-200 bg-white'
       }`}>
-      <Text
-        className={`font-clash-semibold text-base ${
-          selectedCategory === item.id ? 'text-white' : 'text-text-secondary'
-        }`}>
-        {item.name}
-      </Text>
+      <View className="flex-row items-center">
+        <Text className="mr-2 text-lg">{item.icon}</Text>
+        <Text
+          className={`font-clash-semibold text-base ${
+            selectedCategory === item.id ? 'text-white' : 'text-text-secondary'
+          }`}>
+          {item.name}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 
@@ -263,7 +267,7 @@ export default function AITask() {
             keyExtractor={(item) => item.id}
             numColumns={2}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 16 }}
+            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 8 }}
           />
         </View>
       </View>
