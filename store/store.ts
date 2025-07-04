@@ -1,6 +1,7 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Purchases, { CustomerInfo, PurchasesOffering } from 'react-native-purchases';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 export interface BearState {
   bears: number;
@@ -20,8 +21,19 @@ interface SubscriptionState {
   isPremium: boolean;
   subscriptionType: 'monthly' | 'yearly' | null;
   subscriptionDate: string | null;
+  customerInfo: CustomerInfo | null;
+  offerings: PurchasesOffering[] | null;
+  isLoading: boolean;
+
+  // Actions
   setPremium: (type: 'monthly' | 'yearly') => void;
   resetSubscription: () => void;
+  setCustomerInfo: (info: CustomerInfo) => void;
+  setOfferings: (offerings: PurchasesOffering[]) => void;
+  setLoading: (loading: boolean) => void;
+  checkSubscriptionStatus: () => Promise<void>;
+  getOfferings: () => Promise<void>;
+  purchasePackage: (packageToPurchase: any) => Promise<boolean>;
 }
 
 export interface AIModel {
@@ -43,10 +55,13 @@ interface AIModelState {
 
 export const useSubscriptionStore = create<SubscriptionState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       isPremium: false,
       subscriptionType: null,
       subscriptionDate: null,
+      customerInfo: null,
+      offerings: null,
+      isLoading: true,
       setPremium: (type: 'monthly' | 'yearly') =>
         set({
           isPremium: true,
@@ -58,7 +73,57 @@ export const useSubscriptionStore = create<SubscriptionState>()(
           isPremium: false,
           subscriptionType: null,
           subscriptionDate: null,
+          customerInfo: null,
+          offerings: null,
+          isLoading: true,
         }),
+      setCustomerInfo: (info: CustomerInfo) => set({ customerInfo: info }),
+      setOfferings: (offerings: PurchasesOffering[]) => set({ offerings }),
+      setLoading: (loading: boolean) => set({ isLoading: loading }),
+      checkSubscriptionStatus: async () => {
+        try {
+          const customerInfo = await Purchases.getCustomerInfo();
+          const isPremium = typeof customerInfo.entitlements.active['premium'] !== 'undefined';
+
+          set({
+            customerInfo,
+            isPremium,
+            subscriptionType: isPremium ? 'monthly' : null, // You might want to determine this based on the actual subscription
+            subscriptionDate: isPremium ? new Date().toISOString() : null,
+            isLoading: false,
+          });
+        } catch (error) {
+          console.error('Error checking subscription status:', error);
+          set({ isLoading: false });
+        }
+      },
+      getOfferings: async () => {
+        try {
+          const offerings = await Purchases.getOfferings();
+          const offeringsArray = Object.values(offerings.all) as PurchasesOffering[];
+          set({ offerings: offeringsArray });
+        } catch (error) {
+          console.error('Error getting offerings:', error);
+        }
+      },
+      purchasePackage: async (packageToPurchase: any) => {
+        try {
+          const { customerInfo } = await Purchases.purchasePackage(packageToPurchase);
+          const isPremium = typeof customerInfo.entitlements.active['premium'] !== 'undefined';
+
+          set({
+            customerInfo,
+            isPremium,
+            subscriptionType: isPremium ? 'monthly' : null,
+            subscriptionDate: isPremium ? new Date().toISOString() : null,
+          });
+
+          return isPremium;
+        } catch (error) {
+          console.error('Error purchasing package:', error);
+          return false;
+        }
+      },
     }),
     {
       name: 'subscription-storage',

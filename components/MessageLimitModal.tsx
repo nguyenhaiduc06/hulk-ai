@@ -1,14 +1,15 @@
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
-import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { useCallback, useEffect, useRef } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 interface MessageLimitModalProps {
   visible: boolean;
   onClose: () => void;
   messagesLeft: number;
   maxMessages: number;
+  isPremium?: boolean;
 }
 
 export function MessageLimitModal({
@@ -16,6 +17,7 @@ export function MessageLimitModal({
   onClose,
   messagesLeft,
   maxMessages,
+  isPremium = false,
 }: MessageLimitModalProps) {
   const router = useRouter();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -55,6 +57,18 @@ export function MessageLimitModal({
     }
   }, [visible]);
 
+  // Don't show modal for premium users
+  if (isPremium) {
+    return null;
+  }
+
+  const getMessageText = () => {
+    if (messagesLeft === -1) {
+      return 'unlimited messages';
+    }
+    return `${messagesLeft} of ${maxMessages} free messages remaining today`;
+  };
+
   return (
     <BottomSheetModal
       ref={bottomSheetModalRef}
@@ -74,34 +88,34 @@ export function MessageLimitModal({
       <BottomSheetView className="pb-safe flex-1 px-8">
         {/* Header */}
         <View className="mb-8 items-center">
-          <View className="bg-primary-light mb-6 h-20 w-20 items-center justify-center rounded-3xl">
+          <View className="mb-6 h-20 w-20 items-center justify-center rounded-3xl bg-primary-light">
             <Ionicons name="chatbubble" size={36} color="#8ee04e" />
           </View>
-          <Text className="font-clash-bold text-text-primary text-center text-3xl">
+          <Text className="text-center font-clash-bold text-3xl text-text-primary">
             Daily Message Limit
           </Text>
-          <Text className="font-inter text-text-secondary text-center text-lg">
-            You have {messagesLeft} of {maxMessages} free messages remaining today
+          <Text className="text-center font-inter text-lg text-text-secondary">
+            You have {getMessageText()}
           </Text>
         </View>
 
         {/* Message Limit Info */}
         <View className="mb-8 rounded-3xl bg-gray-50 p-6">
-          <Text className="font-clash-semibold text-text-primary text-lg">Free Plan Includes:</Text>
+          <Text className="font-clash-semibold text-lg text-text-primary">Free Plan Includes:</Text>
           <View className="space-y-3">
             <View className="flex-row items-center">
               <Ionicons name="checkmark-circle" size={20} color="#6b7280" />
-              <Text className="font-inter text-text-secondary ml-1 text-base">
-                {maxMessages} messages per day
+              <Text className="ml-1 font-inter text-base text-text-secondary">
+                {maxMessages === -1 ? 'Unlimited' : maxMessages} messages per day
               </Text>
             </View>
             <View className="flex-row items-center">
               <Ionicons name="checkmark-circle" size={20} color="#6b7280" />
-              <Text className="font-inter text-text-secondary ml-1 text-base">Basic AI models</Text>
+              <Text className="ml-1 font-inter text-base text-text-secondary">Basic AI models</Text>
             </View>
             <View className="flex-row items-center">
               <Ionicons name="checkmark-circle" size={20} color="#6b7280" />
-              <Text className="font-inter text-text-secondary ml-1 text-base">
+              <Text className="ml-1 font-inter text-base text-text-secondary">
                 Standard response times
               </Text>
             </View>
@@ -109,32 +123,32 @@ export function MessageLimitModal({
         </View>
 
         {/* Premium CTA */}
-        <View className="border-primary rounded-3xl border-2 bg-white p-6">
+        <View className="rounded-3xl border-2 border-primary bg-white p-6">
           <View className="flex-row items-center">
             <Ionicons name="diamond" size={20} color="#8ee04e" />
-            <Text className="font-clash-semibold text-text-primary ml-3 text-lg">
+            <Text className="ml-3 font-clash-semibold text-lg text-text-primary">
               Upgrade to Premium
             </Text>
           </View>
-          <Text className="text-text-secondary font-inter mb-6 text-base">
+          <Text className="mb-6 font-inter text-base text-text-secondary">
             Get unlimited messages, faster responses, and access to advanced AI models
           </Text>
           <View className="space-y-3">
             <View className="flex-row items-center">
               <Ionicons name="infinite" size={20} color="#8ee04e" />
-              <Text className="font-inter text-text-primary ml-3 text-base">
+              <Text className="ml-3 font-inter text-base text-text-primary">
                 Unlimited messages
               </Text>
             </View>
             <View className="flex-row items-center">
               <Ionicons name="flash" size={20} color="#8ee04e" />
-              <Text className="font-inter text-text-primary ml-3 text-base">
+              <Text className="ml-3 font-inter text-base text-text-primary">
                 Priority processing
               </Text>
             </View>
             <View className="flex-row items-center">
               <Ionicons name="star" size={20} color="#8ee04e" />
-              <Text className="font-inter text-text-primary ml-3 text-base">
+              <Text className="ml-3 font-inter text-base text-text-primary">
                 Advanced AI models
               </Text>
             </View>
@@ -146,12 +160,12 @@ export function MessageLimitModal({
           <TouchableOpacity
             onPress={handleClose}
             className="h-14 flex-1 items-center justify-center rounded-2xl border-2 border-gray-300">
-            <Text className="font-clash-medium text-text-secondary text-center">Maybe Later</Text>
+            <Text className="text-center font-clash-medium text-text-secondary">Maybe Later</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleUpgrade}
-            className="bg-primary h-14 flex-1 items-center justify-center rounded-2xl">
-            <Text className="font-clash-medium text-center text-white">Upgrade Now</Text>
+            className="h-14 flex-1 items-center justify-center rounded-2xl bg-primary">
+            <Text className="text-center font-clash-medium text-white">Upgrade Now</Text>
           </TouchableOpacity>
         </View>
       </BottomSheetView>

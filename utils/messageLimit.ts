@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSubscriptionStore } from '../store/store';
 
 const MESSAGE_LIMIT_KEY = 'daily_message_limit';
 const MESSAGE_COUNT_KEY = 'daily_message_count';
@@ -10,17 +11,29 @@ export interface MessageLimitState {
   messagesLeft: number;
   maxMessages: number;
   lastResetDate: string;
+  isPremium: boolean;
 }
 
-// Check if user is premium (this will be called from components)
+// Check if user is premium using the subscription store
 export function isPremiumUser(): boolean {
-  // This will be called from components that have access to the subscription store
-  // For now, we'll return false and let components handle the premium check
-  return false;
+  const state = useSubscriptionStore.getState();
+  return state.isPremium;
 }
 
 export async function getMessageLimitState(): Promise<MessageLimitState> {
   try {
+    const isPremium = isPremiumUser();
+
+    // Premium users have unlimited messages
+    if (isPremium) {
+      return {
+        messagesLeft: -1, // -1 indicates unlimited
+        maxMessages: -1,
+        lastResetDate: new Date().toDateString(),
+        isPremium: true,
+      };
+    }
+
     const [messageCount, lastResetDate] = await Promise.all([
       AsyncStorage.getItem(MESSAGE_COUNT_KEY),
       AsyncStorage.getItem(LAST_RESET_DATE_KEY),
@@ -36,6 +49,7 @@ export async function getMessageLimitState(): Promise<MessageLimitState> {
         messagesLeft: DAILY_MESSAGE_LIMIT,
         maxMessages: DAILY_MESSAGE_LIMIT,
         lastResetDate: today,
+        isPremium: false,
       };
     }
 
@@ -46,6 +60,7 @@ export async function getMessageLimitState(): Promise<MessageLimitState> {
       messagesLeft,
       maxMessages: DAILY_MESSAGE_LIMIT,
       lastResetDate: storedDate,
+      isPremium: false,
     };
   } catch (error) {
     console.error('Error getting message limit state:', error);
@@ -53,12 +68,25 @@ export async function getMessageLimitState(): Promise<MessageLimitState> {
       messagesLeft: DAILY_MESSAGE_LIMIT,
       maxMessages: DAILY_MESSAGE_LIMIT,
       lastResetDate: new Date().toDateString(),
+      isPremium: false,
     };
   }
 }
 
 export async function incrementMessageCount(): Promise<MessageLimitState> {
   try {
+    const isPremium = isPremiumUser();
+
+    // Premium users don't have message limits
+    if (isPremium) {
+      return {
+        messagesLeft: -1,
+        maxMessages: -1,
+        lastResetDate: new Date().toDateString(),
+        isPremium: true,
+      };
+    }
+
     const currentState = await getMessageLimitState();
 
     if (currentState.messagesLeft <= 0) {
@@ -72,6 +100,7 @@ export async function incrementMessageCount(): Promise<MessageLimitState> {
       messagesLeft: Math.max(0, DAILY_MESSAGE_LIMIT - newCount),
       maxMessages: DAILY_MESSAGE_LIMIT,
       lastResetDate: currentState.lastResetDate,
+      isPremium: false,
     };
   } catch (error) {
     console.error('Error incrementing message count:', error);
@@ -92,6 +121,13 @@ export async function resetDailyMessageCount(): Promise<void> {
 }
 
 export async function canSendMessage(): Promise<boolean> {
+  const isPremium = isPremiumUser();
+
+  // Premium users can always send messages
+  if (isPremium) {
+    return true;
+  }
+
   const state = await getMessageLimitState();
   return state.messagesLeft > 0;
 }

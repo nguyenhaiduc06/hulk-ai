@@ -1,0 +1,9 @@
+name: Deploy to production
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production

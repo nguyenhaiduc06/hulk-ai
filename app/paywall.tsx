@@ -1,50 +1,105 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { PurchasesPackage } from 'react-native-purchases';
 import { useSubscriptionStore } from '~/store/store';
 
 export default function Paywall() {
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
-  const setPremium = useSubscriptionStore((state) => state.setPremium);
+  const {
+    isPremium,
+    offerings,
+    isLoading,
+    getOfferings,
+    purchasePackage,
+    checkSubscriptionStatus,
+  } = useSubscriptionStore();
+
+  useEffect(() => {
+    // Check subscription status when component mounts
+    checkSubscriptionStatus();
+    getOfferings();
+  }, []);
 
   const handleBack = () => {
     router.back();
   };
 
-  const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
+  const handlePurchase = async (packageToPurchase: PurchasesPackage) => {
     setIsProcessing(true);
 
-    // Simulate payment processing
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      const success = await purchasePackage(packageToPurchase);
 
-      // Mock successful payment
-      Alert.alert(
-        'Payment Successful! 🎉',
-        `Your ${plan} subscription has been activated. You now have unlimited messages!`,
-        [
-          {
-            text: 'Start Using Premium',
-            onPress: () => {
-              // Update subscription status
-              setPremium(plan);
-              router.back();
+      if (success) {
+        Alert.alert(
+          'Payment Successful! 🎉',
+          'Your subscription has been activated. You now have unlimited messages!',
+          [
+            {
+              text: 'Start Using Premium',
+              onPress: () => {
+                router.back();
+              },
             },
-          },
-        ]
+          ]
+        );
+      } else {
+        Alert.alert(
+          'Purchase Failed',
+          'Something went wrong with your purchase. Please try again.',
+          [{ text: 'OK' }]
+        );
+      }
+    } catch (error) {
+      console.error('Purchase error:', error);
+      Alert.alert(
+        'Purchase Error',
+        'There was an error processing your purchase. Please try again.',
+        [{ text: 'OK' }]
       );
-    }, 2000); // 2 second delay to simulate processing
+    } finally {
+      setIsProcessing(false);
+    }
   };
+
+  // If user is already premium, show different content
+  if (isPremium) {
+    return (
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View className="pt-safe flex-1 bg-gray-100">
+          <View className="flex-row items-center justify-between px-6 py-4">
+            <TouchableOpacity
+              onPress={handleBack}
+              className="rounded-2xl bg-white/80 p-2 backdrop-blur-sm">
+              <Ionicons name="arrow-back" size={24} color="#374151" />
+            </TouchableOpacity>
+            <Text className="font-clash-semibold text-xl text-text-primary">Premium</Text>
+            <View className="w-10" />
+          </View>
+
+          <View className="flex-1 items-center justify-center px-6">
+            <View className="mb-6 h-24 w-24 items-center justify-center rounded-3xl bg-primary">
+              <Ionicons name="checkmark-circle" size={48} color="white" />
+            </View>
+            <Text className="text-center font-clash-bold text-3xl text-text-primary">
+              You're Premium! 🎉
+            </Text>
+            <Text className="text-center font-inter text-lg text-text-secondary">
+              Enjoy unlimited access to all premium features
+            </Text>
+          </View>
+        </View>
+      </>
+    );
+  }
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
 
       <View className="pt-safe flex-1 bg-gray-100">
         {/* Header */}
@@ -70,38 +125,6 @@ export default function Paywall() {
             <Text className="text-center font-inter text-lg text-text-secondary">
               Get unlimited access to advanced AI capabilities
             </Text>
-          </View>
-
-          {/* Testimonials */}
-          <View className="mb-12">
-            <Text className="mb-2 font-clash-semibold text-xl text-text-primary">
-              What Users Say
-            </Text>
-            <View className="gap-2">
-              {[
-                {
-                  name: 'Sarah M.',
-                  text: 'Premium features have transformed how I work. The unlimited messages are a game-changer!',
-                },
-                {
-                  name: 'Alex K.',
-                  text: 'Worth every penny. The advanced AI models provide incredible insights.',
-                },
-                {
-                  name: 'Maria L.',
-                  text: 'Customer support is amazing. They helped me get the most out of the platform.',
-                },
-              ].map((testimonial, index) => (
-                <View key={index} className="rounded-3xl bg-white p-6 shadow-lg">
-                  <Text className="mb-3 font-inter text-base text-text-secondary">
-                    "{testimonial.text}"
-                  </Text>
-                  <Text className="font-clash-medium text-sm text-text-primary">
-                    — {testimonial.name}
-                  </Text>
-                </View>
-              ))}
-            </View>
           </View>
 
           {/* Features */}
@@ -153,15 +176,56 @@ export default function Paywall() {
               Choose Your Plan
             </Text>
 
-            <View className="items-center rounded-3xl bg-white p-6 shadow-lg">
-              <Text className="mb-2 font-clash-medium text-lg text-text-primary">
-                Premium plans are coming soon!
-              </Text>
-              <Text className="text-center font-inter text-base text-text-secondary">
-                We will add subscription options in our next updates. Stay tuned for more features
-                and ways to unlock unlimited access.
-              </Text>
-            </View>
+            {isLoading ? (
+              <View className="items-center rounded-3xl bg-white p-6 shadow-lg">
+                <Text className="font-inter text-base text-text-secondary">
+                  Loading subscription options...
+                </Text>
+              </View>
+            ) : offerings && offerings.length > 0 ? (
+              <View className="gap-4">
+                {offerings[0]?.availablePackages.map((pkg: PurchasesPackage) => (
+                  <View key={pkg.identifier} className="rounded-3xl bg-white p-6 shadow-lg">
+                    <View className="mb-4 flex-row items-center justify-between">
+                      <View>
+                        <Text className="font-clash-semibold text-xl text-text-primary">
+                          {pkg.product.title}
+                        </Text>
+                        <Text className="font-inter text-sm text-text-secondary">
+                          {pkg.product.description}
+                        </Text>
+                      </View>
+                      <View className="items-end">
+                        <Text className="font-clash-bold text-2xl text-primary">
+                          {pkg.product.priceString}
+                        </Text>
+                        <Text className="font-inter text-xs text-text-tertiary">
+                          {pkg.product.subscriptionPeriod}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <TouchableOpacity
+                      onPress={() => handlePurchase(pkg)}
+                      disabled={isProcessing}
+                      className={`rounded-2xl bg-primary px-6 py-4 ${isProcessing ? 'opacity-50' : ''}`}>
+                      <Text className="text-center font-clash-semibold text-lg text-white">
+                        {isProcessing ? 'Processing...' : 'Subscribe Now'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View className="items-center rounded-3xl bg-white p-6 shadow-lg">
+                <Text className="mb-2 font-clash-medium text-lg text-text-primary">
+                  No subscription options available
+                </Text>
+                <Text className="text-center font-inter text-base text-text-secondary">
+                  Please check your internet connection and try again.
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Bottom spacing */}

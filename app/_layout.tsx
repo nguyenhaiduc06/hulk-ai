@@ -1,14 +1,17 @@
 import '../global.css';
 
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import Purchases, { LOG_LEVEL } from 'react-native-purchases';
+import { useSubscriptionStore } from '../store/store';
 import { loadFonts } from '../utils/fonts';
 
 export default function Layout() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const checkSubscriptionStatus = useSubscriptionStore((state) => state.checkSubscriptionStatus);
 
   useEffect(() => {
     const loadAppFonts = async () => {
@@ -23,6 +26,22 @@ export default function Layout() {
 
     loadAppFonts();
   }, []);
+
+  useEffect(() => {
+    // Initialize RevenueCat
+    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+
+    if (Platform.OS === 'ios') {
+      Purchases.configure({ apiKey: 'appl_jjkqwhlOwQIRIHMEDRXAQxVmZNn' });
+    } else if (Platform.OS === 'android') {
+      Purchases.configure({ apiKey: 'your_android_api_key' });
+      // OR: if building for Amazon, be sure to follow the installation instructions then:
+      // Purchases.configure({ apiKey: 'your_amazon_api_key', useAmazon: true });
+    }
+
+    // Check subscription status after RevenueCat is configured
+    checkSubscriptionStatus();
+  }, [checkSubscriptionStatus]);
 
   if (!fontsLoaded) {
     return (

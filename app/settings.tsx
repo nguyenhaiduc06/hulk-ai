@@ -4,8 +4,14 @@ import React, { useState } from 'react';
 import { Alert, Linking, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { CustomHeader } from '~/components/CustomHeader';
 import { ModelSelectionModal } from '~/components/ModelSelectionModal';
-import { useAIModelStore, useSubscriptionStore, useChatHistoryStore } from '~/store/store';
+import { useAIModelStore, useChatHistoryStore, useSubscriptionStore } from '~/store/store';
 import { DAILY_MESSAGE_LIMIT, getMessageLimitState } from '~/utils/messageLimit';
+import {
+  checkPremiumStatus,
+  logAvailableOfferings,
+  logCustomerInfo,
+  testRevenueCatConnection,
+} from '~/utils/revenuecat';
 
 interface SettingsItemProps {
   icon: string;
@@ -77,6 +83,7 @@ export default function Settings() {
   const isPremium = useSubscriptionStore((state) => state.isPremium);
   const { selectedModel, setSelectedModel, getCurrentModel } = useAIModelStore();
   const { clearAllSessions } = useChatHistoryStore();
+  const { checkSubscriptionStatus } = useSubscriptionStore();
   const currentModel = getCurrentModel();
 
   React.useEffect(() => {
@@ -158,6 +165,44 @@ export default function Settings() {
     );
   };
 
+  // RevenueCat debugging functions
+  const handleTestRevenueCat = async () => {
+    const isConnected = await testRevenueCatConnection();
+    Alert.alert(
+      'RevenueCat Test',
+      isConnected ? 'Connection successful!' : 'Connection failed. Check logs for details.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleLogCustomerInfo = async () => {
+    await logCustomerInfo();
+    Alert.alert('Customer Info', 'Customer info logged to console. Check your debug logs.', [
+      { text: 'OK' },
+    ]);
+  };
+
+  const handleLogOfferings = async () => {
+    await logAvailableOfferings();
+    Alert.alert('Offerings', 'Available offerings logged to console. Check your debug logs.', [
+      { text: 'OK' },
+    ]);
+  };
+
+  const handleCheckPremiumStatus = async () => {
+    const isPremiumStatus = await checkPremiumStatus();
+    Alert.alert('Premium Status', `Premium status: ${isPremiumStatus ? 'Active' : 'Inactive'}`, [
+      { text: 'OK' },
+    ]);
+  };
+
+  const handleRefreshSubscription = async () => {
+    await checkSubscriptionStatus();
+    Alert.alert('Subscription Refreshed', 'Subscription status has been refreshed.', [
+      { text: 'OK' },
+    ]);
+  };
+
   return (
     <>
       <Stack.Screen
@@ -180,46 +225,79 @@ export default function Settings() {
           <View className="mb-8">
             <Text className="mb-2 font-clash-semibold text-xl text-text-primary">Account</Text>
             <View className="gap-3">
-              {/* <SettingsItem
+              <SettingsItem
                 icon="person-circle-outline"
                 title="Subscription"
                 subtitle={isPremium ? 'Premium Active' : 'Free Plan'}
                 onPress={handleSubscriptionPress}
                 isPremium={isPremium}
-              /> */}
+              />
               <SettingsItem
                 icon="chatbubble-ellipses-outline"
                 title="AI Model"
                 subtitle={`Current: ${currentModel?.name || 'GPT-4o Mini'}`}
                 onPress={handleModelSelectionPress}
               />
-              {/* <SettingsItem
+              <SettingsItem
                 icon="download-outline"
                 title="Export Data"
                 subtitle="Download your conversations and data"
                 onPress={handleExportDataPress}
-              /> */}
-              <SettingsItem
-                icon="trash-outline"
-                title="Delete Chat History"
-                subtitle="Permanently delete your chat history"
-                onPress={handleClearChatHistory}
-                showArrow={false}
               />
             </View>
           </View>
 
-          {/* App Preferences Section */}
-          {/* <View className="mb-8">
-            <Text className="mb-2 font-clash-semibold text-xl text-text-primary">
-              App Preferences
-            </Text>
+          {/* RevenueCat Debug Section - Only show in development */}
+          {__DEV__ && (
+            <View className="mb-8">
+              <Text className="mb-2 font-clash-semibold text-xl text-text-primary">
+                RevenueCat Debug
+              </Text>
+              <View className="gap-3">
+                <SettingsItem
+                  icon="bug-outline"
+                  title="Test Connection"
+                  subtitle="Test RevenueCat connection"
+                  onPress={handleTestRevenueCat}
+                />
+                <SettingsItem
+                  icon="person-outline"
+                  title="Log Customer Info"
+                  subtitle="Print customer info to console"
+                  onPress={handleLogCustomerInfo}
+                />
+                <SettingsItem
+                  icon="gift-outline"
+                  title="Log Offerings"
+                  subtitle="Print available offerings to console"
+                  onPress={handleLogOfferings}
+                />
+                <SettingsItem
+                  icon="diamond-outline"
+                  title="Check Premium Status"
+                  subtitle="Check current premium status"
+                  onPress={handleCheckPremiumStatus}
+                />
+                <SettingsItem
+                  icon="refresh-outline"
+                  title="Refresh Subscription"
+                  subtitle="Refresh subscription status"
+                  onPress={handleRefreshSubscription}
+                />
+              </View>
+            </View>
+          )}
+
+          {/* Preferences Section */}
+          <View className="mb-8">
+            <Text className="mb-2 font-clash-semibold text-xl text-text-primary">Preferences</Text>
             <View className="gap-3">
               <SettingsItem
                 icon="notifications-outline"
                 title="Notifications"
-                subtitle="Get notified about new features and updates"
+                subtitle="Push notifications for updates"
                 onPress={() => {}}
+                showArrow={false}
                 showSwitch={true}
                 switchValue={notificationsEnabled}
                 onSwitchChange={setNotificationsEnabled}
@@ -227,21 +305,28 @@ export default function Settings() {
               <SettingsItem
                 icon="phone-portrait-outline"
                 title="Haptic Feedback"
-                subtitle="Vibrate on interactions"
+                subtitle="Feel vibrations when interacting"
                 onPress={() => {}}
+                showArrow={false}
                 showSwitch={true}
                 switchValue={hapticFeedbackEnabled}
                 onSwitchChange={setHapticFeedbackEnabled}
               />
             </View>
-          </View> */}
+          </View>
 
-          {/* Privacy & Legal Section */}
+          {/* Data & Privacy Section */}
           <View className="mb-8">
             <Text className="mb-2 font-clash-semibold text-xl text-text-primary">
-              Privacy & Legal
+              Data & Privacy
             </Text>
             <View className="gap-3">
+              <SettingsItem
+                icon="trash-outline"
+                title="Clear Chat History"
+                subtitle="Remove all your conversations"
+                onPress={handleClearChatHistory}
+              />
               <SettingsItem
                 icon="shield-checkmark-outline"
                 title="Privacy Policy"
@@ -251,25 +336,25 @@ export default function Settings() {
               <SettingsItem
                 icon="document-text-outline"
                 title="Terms of Service"
-                subtitle="Our terms and conditions"
+                subtitle="App usage terms and conditions"
                 onPress={handleTermsPress}
               />
             </View>
           </View>
 
-          {/* Support & About Section */}
+          {/* Support & Feedback Section */}
           <View className="mb-8">
             <Text className="mb-2 font-clash-semibold text-xl text-text-primary">
-              Support & About
+              Support & Feedback
             </Text>
             <View className="gap-3">
               <SettingsItem
                 icon="help-circle-outline"
-                title="Help & Support"
-                subtitle="Get help and contact support"
+                title="Support Center"
+                subtitle="Get help and contact us"
                 onPress={handleSupportPress}
               />
-              {/* <SettingsItem
+              <SettingsItem
                 icon="star-outline"
                 title="Rate App"
                 subtitle="Rate us on the App Store"
@@ -278,13 +363,20 @@ export default function Settings() {
               <SettingsItem
                 icon="share-outline"
                 title="Share App"
-                subtitle="Share with friends and family"
+                subtitle="Tell your friends about us"
                 onPress={handleShareAppPress}
-              /> */}
+              />
+            </View>
+          </View>
+
+          {/* App Info */}
+          <View className="mb-8">
+            <Text className="mb-2 font-clash-semibold text-xl text-text-primary">App Info</Text>
+            <View className="gap-3">
               <SettingsItem
                 icon="information-circle-outline"
-                title="About"
-                subtitle="Version 1.0.0"
+                title="Version"
+                subtitle="1.0.0"
                 onPress={() => {}}
                 showArrow={false}
               />
@@ -303,7 +395,7 @@ export default function Settings() {
         selectedModel={selectedModel}
         onModelSelect={handleModelSelect}
         isPremium={isPremium}
-        onUpgradePress={handleSubscriptionPress}
+        onUpgradePress={() => router.push('/paywall')}
       />
     </>
   );

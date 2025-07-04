@@ -36,24 +36,24 @@ export function CustomHeader({
   const { selectedModel, setSelectedModel, models } = useAIModelStore();
 
   const getMessageColor = () => {
-    if (isPremium) return '#8ee04e'; // Green for premium users
+    if (isPremium || messagesLeft === -1) return '#8ee04e'; // Green for premium users or unlimited
     if (messagesLeft === 0) return '#ef4444'; // Red
     if (messagesLeft <= 1) return '#f59e0b'; // Amber
     return '#8ee04e'; // Green (primary)
   };
 
   const getMessageIcon = () => {
-    if (isPremium) return 'diamond';
+    if (isPremium || messagesLeft === -1) return 'diamond';
     return 'chatbubble';
   };
 
   const getMessageText = () => {
-    if (isPremium) return 'Premium';
+    if (isPremium || messagesLeft === -1) return 'Premium';
     return `${messagesLeft}/${maxMessages}`;
   };
 
   const handleMessageIndicatorPress = () => {
-    if (isPremium) {
+    if (isPremium || messagesLeft === -1) {
       setShowPremiumModal(true);
     } else {
       setShowModal(true);
@@ -138,6 +138,7 @@ export function CustomHeader({
         onClose={() => setShowModal(false)}
         messagesLeft={messagesLeft}
         maxMessages={maxMessages}
+        isPremium={isPremium}
       />
 
       {/* Premium Info Modal */}
